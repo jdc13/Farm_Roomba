@@ -6,6 +6,7 @@ The Intel Realsense 435i camera provides
     Depth Data
 	Gyroscope Data
 	Accelerometer Data
+Written by the BYU robotics lab. Application is not good for roomba.
 ***********************************************
 '''
 # import the necessary packages
