@@ -19,7 +19,13 @@ class PD2ndOrder:#PD controller using pure derivative
     # z = Damping Ratio
     
     
-    def __init__(self, b0, a1, a0, tr, z, Tstep, mn=0, mx=0):
+    def __init__(self, 
+                 b0, a1, a0, #Physical System Transfer Function
+                 tr, z, #Desired rise time and damping ratio
+                 Tstep, #Time step for descrete
+                 mn=0, mx=0 #Saturation limits for the output
+                 ): 
+                
         #operating variables
         self.timeOld = 0            #Variable to store old time for live calculations
         self.firstRun = True        #Tells whether or not the controller is on its first run
@@ -103,7 +109,12 @@ class PD2ndOrderADV:#PD controller using dirty derivative (pure derivative combi
     # z = Damping Ratio
     
     
-    def __init__(self, b0, a1, a0, tr, z, sigma,Tstep, mn=0, mx=0):
+    def __init__(self, 
+                 b0, a1, a0,    #Physical System Transfer Function
+                 tr, z, sigma,  #Controled system parameters, inverse of cutoff frequency for low pass filter
+                 Tstep,         #Time step to be used in simulation. set to live to use active
+                 mn=0, mx=0):   #Output saturation limits
+        
         #operating variables
         self.timeOld = 0            #Variable to store old time for live calculations
         self.firstRun = True        #Tells whether or not the controller is on its first run
@@ -182,7 +193,10 @@ class PD2ndOrderADV:#PD controller using dirty derivative (pure derivative combi
               (-1*alph1 - np.sqrt(alph1**2-4*alph0))/2)
 
 class PDManual:
-    def __init__(self, kp, kd, Tstep, mn = 0, mx = 0):
+    def __init__(self, 
+                 kp, kd, 
+                 Tstep, 
+                 mn = 0, mx = 0):
         self.kp = kp
         self.kd = kd
         self.Tstep = Tstep
@@ -225,7 +239,8 @@ class PID2ndOrderADV:#PD controller using dirty derivative
     
     
     def __init__(self, b0, a1, a0,          #Physical System Parameters
-                 tr, z, sigma, ki, ilim,    #Controller Parameters
+                 tr, z, sigma,              #Derivative parameters 
+                 ki, ilim,                  #integrator Parameters
                  Tstep, mn=0, mx=0):        #time step and saturation values
         #operating variables
         self.timeOld = 0            #Variable to store old time for live calculations
