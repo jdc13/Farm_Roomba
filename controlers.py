@@ -156,7 +156,7 @@ class PD2ndOrderADV:#PD controller using dirty derivative (pure derivative combi
         else:
             Ts = self.Tstep
         
-        beta =  (2.0*self.sigma-Ts)/(2.0*self.sigma+Ts) #This assumes a constant time step. Need to fix for live
+        beta =  (2.0*self.sigma-Ts)/(2.0*self.sigma+Ts) 
         #only do derivative if there is a previous value to refference
         if self.firstRun: 
             self.firstRun = False
@@ -286,7 +286,7 @@ class PID2ndOrderADV:#PD controller using dirty derivative
         else:
             Ts = self.Tstep
         
-        beta =  (2.0*self.sigma-Ts)/(2.0*self.sigma+Ts) #This assumes a constant time step. Need to fix for live
+        beta =  (2.0*self.sigma-Ts)/(2.0*self.sigma+Ts) 
         #only do derivative if there is a previous value to refference
         if self.firstRun: 
             self.firstRun = False
