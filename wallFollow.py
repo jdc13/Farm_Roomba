@@ -20,11 +20,9 @@
 import cv2
 import numpy as np
 import scipy.stats as stat
-import matplotlib.pyplot as plt
+
 
 #custom libraries:
-import sys
-sys.path.append("../OneDrive - Brigham Young University")
 import controlers as ctr
 import RealSense as rs
 
@@ -35,10 +33,10 @@ cam = rs.RSCam(Range= "Short")
 L = 12 #Distance between wheels
 
 #Navigation parameters
-target = 8 #Desired distance from the wall, inches
+target = .2 #Desired distance from the wall
 
 #Controller Parameters:
-t = 3  #Desired Rise Time of the system
+t = 1  #Desired Rise Time of the system
 #Starting with a larger rise time for safety
 ThetaMax = np.pi/6 
 ThetaMin = -1*ThetaMax
@@ -82,10 +80,12 @@ while(1): #will add an exit condition later.
     cam.get_frames()#update camera data
     
     # Will generate a mask that filters things out later.
-    mask1 = np.ones(np.size(cam.depth_image))
+    mask1 = np.ones(np.shape(cam.depth_image)) * 255
+    depthMask = cv2.inRange(cam.depth_image,0,1) #This mask filters out the bad data
 
     # Generate the point cloud:
     pc = cam.FilteredCloud(mask1)
+    
 
     #analyze the point cloud:
     #Get the points in the x-z plane
@@ -98,7 +98,7 @@ while(1): #will add an exit condition later.
 
     # print(slope)
     #Find the angle and run the controller.
-    theta = np.sin(slope)
+    theta = np.arctan(slope)
     # print(y)
     d = WF.update(target,y)
     # print(d)
@@ -121,14 +121,22 @@ while(1): #will add an exit condition later.
     #Use r value to tell if there is a corner
 
     output = [v,dtheta]
-    print(output)
+
+
+    #Visualization code:
+    import matplotlib.pyplot as plt
+    plt.annotate("V = " + str(v) + "\nd = " + str(d), [-.3,.6])
+    # print(output)
     # print(v)
-    length = np.arange(-.3,.3,.1)
+    length = np.arange(-.3,.4,.1)
     wall = slope*length + y
-    plt.cla()
+    tar = np.ones(np.shape(length))*target
+    
     plt.xlim([-.3,.3])
     plt.ylim([0, .6])
     plt.scatter(X,Z)
     plt.plot(length, wall)
+    plt.plot(length, tar)
     plt.draw()
     plt.pause(0.01)
+    plt.cla()

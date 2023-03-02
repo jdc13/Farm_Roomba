@@ -43,26 +43,39 @@
     #Error from bias - compare average value with the true value
     #Random/system error - standard deviation of the individual points.
 
+#Compatibility fix for raspberry pi
+try:
+    #This block will run on a PC
+    import pyrealsense2 as rs
+    rs.pipeline() #Call a random RS case to see if the library is imported properly
+    pclim = 100 # The maximum number of points that the point cloud will return.
+except:
+    #The above block will error on a RPi, so we can assume that these variables will be used.
+    import pyrealsense2.pyrealsense2 as rs
+    pclim = 100 #The maxiumum number of points that the point cloud will return
 
-import pyrealsense2 as rs
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
-from io import StringIO as st
-import pandas as pd
+
+# from io import StringIO as st
+# import pandas as pd
 
 
 class RSCam:
     
     def __init__(self,Range = "Long"): #Lower range = lower resolution
+        #Set up RS objects
         self.pc = rs.pointcloud()
         self.pipeline = rs.pipeline()
         self.config = rs.config()
+
         # Get device product line for setting a supporting resolution
         pipeline_wrapper = rs.pipeline_wrapper(self.pipeline)
         pipeline_profile = self.config.resolve(pipeline_wrapper)
         device = pipeline_profile.get_device()
         device_product_line = str(device.get_info(rs.camera_info.product_line))
+        
+        # Set the detection range of the camera
         if Range == "Long":
             camX = 1280
             camY = 720
@@ -72,6 +85,8 @@ class RSCam:
         elif Range == "Short":
             camX = 424
             camY = 240
+
+        # Enable the camera
         self.config.enable_stream(rs.stream.depth, camX, camY, rs.format.z16, 30) 
         self.config.enable_stream(rs.stream.color, camX, camY, rs.format.bgr8, 30)
 
@@ -91,7 +106,6 @@ class RSCam:
                 continue
             else:
                 break
-        #align frames
         
         # Convert images to numpy arrays
         self.depth_image = np.asanyarray(self.depth_frame.get_data())
@@ -101,22 +115,23 @@ class RSCam:
         return [self.color_image, self.depth_image]
 
     def usr_image(self):
-        # If depth and color resolutions are different, resize color image to match depth image for display
+        # Change the depth image to a color map to make it easier to see
         depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(self.depth_image, alpha=0.03), cv2.COLORMAP_JET)
-
+        
+        # If depth and color resolutions are different, resize color image to match depth image for display
         depth_colormap_dim = depth_colormap.shape
         color_colormap_dim = self.color_image.shape
         if depth_colormap_dim != color_colormap_dim:
             resized_color_image = cv2.resize(self.color_image, dsize=(depth_colormap_dim[1], depth_colormap_dim[0]), interpolation=cv2.INTER_AREA)
-            return np.hstack((resized_color_image, depth_colormap))
+            return np.hstack((resized_color_image, depth_colormap)) #Combine Images
         else:
-            return np.hstack((self.color_image,depth_colormap))
+            return np.hstack((self.color_image,depth_colormap)) #Combine Images
           
     def calibrate(self):
         pass #place holder
 
     def deproject_Point(self, x = np.zeros(2)): #Given a 2D point in the image space, find the 3D point in real space
-        # depth = self.depth_image[x] #Get the depth at the desired point
+        # Note: This is a processor intense process. It is better to use FilteredCloud() for multiple points
         depth_intrin = self.depth_frame.profile.as_video_stream_profile().intrinsics
         depth = self.depth_frame.get_distance(x[0],x[1])
         return rs.rs2_deproject_pixel_to_point(depth_intrin, x, depth)
@@ -126,17 +141,36 @@ class RSCam:
         #Generate the point cloud
         self.pc.map_to(self.color_frame) 
         points = self.pc.calculate(depth)
-        
-        vtx = np.asarray(points.get_vertices()) #Extract the 3D coordinates
+
+
+        # Bad points appear as 0,0,0 in the point cloud, and correspond to 0 in the depth image.
+        # Extracting points is a processor heavy process, because of the way RealSense stores the cloud.
+        # Because RealSense isn't officially supported, don't expect this to be fixed.
+        # To limit the number of bad points we waste time processing, we will create a mask based on 
+        # the depth image.
+        depthMask = cv2.inRange(self.depth_image,0,1) #This mask finds the bad data points
+
+        #Combine the depth mask with the input mask.
+        #Change the arrays to booleans for logical operations
+        depthMask = depthMask.astype(bool)
+        mask = mask.astype(bool) 
+        # We want to overlap the good data points with the input mask
+        # Since the depth mask is the locations of the bad data points, we just not it 
+        mask = np.logical_and(mask,np.logical_not(depthMask))
         
         #Prepare the mask for processing
         mask = mask.flatten() #Make the mask and the point cloud the same dimension
         loc = np.nonzero(mask)#Get the indecies of the non-0 elements of the mask
-        if np.size(loc) > 100:
-            n = int(np.size(loc)/100)
+        
+        #Find the number of points to skip to get an evenly spaced cloud within the allowed number of points
+        if np.size(loc) > pclim:         
+            n = int(np.size(loc)/pclim)
         else:
             n = 1
 
+        #Extract the 3D coordinates
+        vtx = np.asarray(points.get_vertices()) 
+        
         objectCloud = []#initialize empty list
         i = 0 #Initialize the index to 0
         
@@ -152,7 +186,7 @@ class RSCam:
             temp = map(float, temp)
             cord = list(temp)
             
-            if sum(cord) != 0:
+            if sum(cord) != 0: #Check to make sure a bad point didn't slip through
                 objectCloud.append(cord) #Good data point add it and move to the next
                 i += n #Skip n coordinates
             else:
@@ -168,7 +202,8 @@ class RSCam:
 #Use area below as example code:
 # def nothing(blank):
 #     pass
-    
+
+# import matplotlib.pyplot as plt
     
 
 # cam = RSCam(Range = "Short")
