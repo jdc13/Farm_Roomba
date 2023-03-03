@@ -20,6 +20,7 @@
 import cv2
 import numpy as np
 import scipy.stats as stat
+import matplotlib.pyplot as plt
 
 
 #custom libraries:
@@ -70,7 +71,7 @@ v = 0.
 #Follow the wall:
 #This will output to the pico
 # Outputs: Velocity, dtheta
-fig = plt.figure(1)
+
 # plt.ion()
 plt.title("looking down")
 plt.xlim([-.3,.3])
@@ -124,7 +125,8 @@ while(1): #will add an exit condition later.
 
 
     #Visualization code:
-    import matplotlib.pyplot as plt
+    
+    fig = plt.figure(1)
     plt.annotate("V = " + str(v) + "\nd = " + str(d), [-.3,.6])
     # print(output)
     # print(v)
