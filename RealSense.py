@@ -52,7 +52,7 @@ try:
 except:
     #The above block will error on a RPi, so we can assume that these variables will be used.
     import pyrealsense2.pyrealsense2 as rs
-    pclim = 100 #The maxiumum number of points that the point cloud will return
+    pclim = 50 #The maxiumum number of points that the point cloud will return
 
 import cv2
 import numpy as np
