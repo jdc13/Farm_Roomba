@@ -21,7 +21,8 @@ import cv2
 import numpy as np
 import scipy.stats as stat
 import matplotlib.pyplot as plt
-
+#time library for identifying the places where time is being lost
+import time
 
 #custom libraries:
 import controlers as ctr
@@ -78,15 +79,20 @@ plt.xlim([-.3,.3])
 plt.ylim([0, .6])
 
 while(1): #will add an exit condition later.
+    told = time.ctime()
     cam.get_frames()#update camera data
+    tnew = time.ctime()
+    print("time to get frames ", tnew-told)
     
     # Will generate a mask that filters things out later.
     mask1 = np.ones(np.shape(cam.depth_image)) * 255
     depthMask = cv2.inRange(cam.depth_image,0,1) #This mask filters out the bad data
 
     # Generate the point cloud:
+    told = time.ctime()
     pc = cam.FilteredCloud(mask1)
-    
+    tnew = time.ctime()
+    print("time to generate the point cloud:  ", tnew-told)
 
     #analyze the point cloud:
     #Get the points in the x-z plane

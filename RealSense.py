@@ -54,9 +54,11 @@ except:
     import pyrealsense2.pyrealsense2 as rs
     pclim = 50 #The maxiumum number of points that the point cloud will return
 
+
+
 import cv2
 import numpy as np
-
+import time
 # from io import StringIO as st
 # import pandas as pd
 
@@ -141,6 +143,11 @@ class RSCam:
         #Generate the point cloud
         self.pc.map_to(self.color_frame) 
         points = self.pc.calculate(depth)
+
+        # #Possibly faster method:
+        # v, t = points.get_vertices(), points.get_texture_coordinates()
+        # verts = np.asanyarray(v).view(np.float32).reshape(-1, 3)  # xyz
+        # texcoords = np.asanyarray(t).view(np.float32).reshape(-1, 2)  # uv
 
 
         # Bad points appear as 0,0,0 in the point cloud, and correspond to 0 in the depth image.
