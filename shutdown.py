@@ -14,6 +14,7 @@
 
 
 import RPi.GPIO as gpio
+from gpiozero import Button
 import os
 from time import sleep
 
@@ -24,7 +25,7 @@ gpio.setmode(gpio.BOARD)
 
 #pins for power and LED
 powerButton = 5
-LED = 6
+LED = 11
 
 #Set up power button pin
 gpio.setup(powerButton, gpio.IN, pull_up_down=gpio.PUD_UP)
@@ -33,14 +34,16 @@ gpio.setup(powerButton, gpio.IN, pull_up_down=gpio.PUD_UP)
 gpio.setup(LED, gpio.OUT, initial = gpio.HIGH)
 
 #wait for the button press:
-gpio.wait_for_edge(powerButton, gpio.FALLING)
-
+#gpio.wait_for_edge(powerButton, gpio.FALLING)
+Button(3).wait_for_press()
+print("button pressed")
 #blink the LED a afew times to show that the button has been pressed and that shutoff has been initiated
 for i in range(1,4):
     gpio.output(LED, gpio.LOW)
-    sleep(.25)
+    sleep(.125)
     gpio.output(LED, gpio.HIGH)
+    sleep(.125)
 
 #send shutdown command to system:
-os.system("sudo shutdown -h now")
+os.system("sudo poweroff")
 
