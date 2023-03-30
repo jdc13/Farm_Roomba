@@ -100,9 +100,14 @@ while(1): #will add an exit condition later.
     Z = np.transpose(pc[:,2]) #third column of the point cloud
     
     #linear regression:
-    slope, y, r, p, se = stat.linregress(X, Z)
-    r = r**2
-
+    # slope, y, r, p, se = stat.linregress(X, Z)
+    # r = r**2
+    A = np.ones([2,np.size(X)])
+    A[:,1] = X
+    a = np.linalg.inv(A.T@A)@A.T@Z
+    y = a.item(0)
+    slope = a.item(1)
+    
     # print(slope)
     #Find the angle and run the controller.
     theta = np.arctan(slope)

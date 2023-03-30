@@ -9,7 +9,7 @@ Test_Case = "calibration"
 
 import numpy as np
 import cv2
-import RealSense as rs
+import Hardware.RealSense as rs
 import pandas as pd
 import matplotlib.pyplot as plt
 
