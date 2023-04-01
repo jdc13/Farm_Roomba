@@ -1,5 +1,3 @@
-import sys
-sys.path.append("../OneDrive - Brigham Young University")
 import controlers as ctr
 import scipy as sc
 import numpy as np

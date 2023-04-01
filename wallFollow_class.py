@@ -68,3 +68,48 @@ class WallFollow:
         #return the controller parameters and the r**2 value
         return [v, dtheta, r]
 
+
+
+
+class position_observer:
+    def __init__(self, x = 0, y = 0, theta = 0): #arguments are initial position
+        self.state = np.array([[x],
+                               [y],
+                               [theta]])
+        
+    def update_DR(self, v, d, steps): #Dead reaconing
+        #Theta will need to be corrected from the controller output based on which way the robot is facing.
+        x = self.state.item(0)
+        y = self.state.item(1)
+        theta = self.state.item(2)
+
+        #Calculate the difference based on the previous state
+        dist = np.array([[np.sin(theta)*v],
+                         [np.cos(theta)*v],
+                         [d]])
+        dist  *= steps #multiply by the number of steps to get the distance traveled
+
+        self.state +=dist #Add the movement to the state
+
+    def update_MXT(self, xm, tm): #update the x and the theta based on the distance from the wall
+        # measured values for x and theta will need to be adjusted for which wall the robot is on.
+        
+        measured = np.array([[xm],
+                             [0],
+                             [tm]])
+        C = np.array([[1,0,0],
+                      [0,0,0],
+                      [0,0,1]])
+        
+        self.state += .75*(measured - C @ self.state)
+        
+
+    def update_MY(self, ym): #update the y location
+        measured = np.array([[0],
+                             [ym],
+                             [0]])
+        C = np.array([[0,0,0],
+                      [0,1,0],
+                      [0,0,0]])
+        
+        self.state += .75*(measured - C @ self.state)

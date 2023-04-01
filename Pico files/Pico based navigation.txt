@@ -1,0 +1,34 @@
+The general idea here is to run the observer and controller for the wall following on the pico.
+My reasoning behind this is we are no longer using a live feed from the RealSense camera for navigation.
+Most of what we are doing is dead reaconing.
+The dead reaconing is much more complicated if it is being done on the raspberry pi, since data has to be sent from 
+the pico to the pi then back. If the observer is on the pico we may be able to update it at every step.
+
+
+
+Psudo code:
+
+Pi                                                  Pico
+Read data from RealSense
+use data to map, get location
+    Send location to pico -------------------------> update observer
+Check if there are bolls to harvest
+    if yes: Send which bolls to harvest to pico ---> harvest
+        Wait for pico to complete harvesting    <--- harvest complete
+    if no: do nothing
+Determine next way point
+    send coordinates to pico ----------------------> Navigate:
+                                                     while observer location not within tolerance of waypoint:
+                                                        Run controller based on observer states
+                                                        set frequencies on steppers based on controller output
+                                                        enable ISR
+                                                        check observer (observer updated in ISR)
+                                                    
+                                                    ISR:
+                                                        Run some number of steps
+                                                        when done running steps update observer with dead reaconing
+                                                    
+
+                                                    After breaking from while loop:
+wait for pico to finish navigating <----------------done
+State transition                                         
