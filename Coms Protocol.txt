@@ -1,0 +1,17 @@
+The RPi pico and RPi communicate using I2C. Since the pico 
+serves several functions, we need protocol to differentiate 
+commands. The address bit of I2C is still needed, however
+it is not shown here.
+
+As a rule:
+Do not change the 1st byte for any of the commands. If you need a new command, add a number. If we have a command that we don't need
+we just won't use that number. We can go up to 255, so it won't be an issue.
+
+1st byte    hardware    command                             following bytes
+0           N/A         status request                      [status-from pico to pi] (busy = 1, finished = 0)
+1           Arm         harvest                             [which plant to harvest]
+2           N/A         Observer update                     [x][y][theta] (May need more bytes per variable. Will need to write code so that values of 0 are ignored.)
+3           N/A         Observer status                     [x][y][theta] (from pico to pi. same notes as above command)
+4           steppers    wall follow to a specific point     [y coordinate] (x coordinate determined by WF controller)
+5           steppers    Drive straight # steps              [# steps][direction]
+6           steppers    turn a specific angle               [angle][direction]
