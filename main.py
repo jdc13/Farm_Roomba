@@ -29,8 +29,45 @@ map = pd.DataFrame(np.zeros((6,9)),
                    index=[1,2,3,4,5,6], 
                    columns=['P1','P2','P3','P4','P5','P6','P7','P8','P9'])
 
-% add switch statement
+# add switch statement
 
+## init
+# set up
+# wallfollow
+
+## wallfollow
+#
+# sample
+
+
+## Harvest
+# stop at bol
+# fine tune
+# color functions
+# call harvest(pass bolLoc, ripeLoc)
+# map
+# bolCounter++
+# return done
+#   status pin to return done
+# WallFollow
+
+## RightCorner
+# turn corner
+# reset bol counter
+# return done
+# WallFollow
+
+## LeftCorner
+# turn corner
+# reset bol counter
+# return done
+# WallFollow
+
+##end
+#maybe go back to start?
+
+## sample
+#based on the bol counter, decide next action
 
 #export CSV file in the prescribed format:
 map.to_csv("map.csv", index_label="Row:")
