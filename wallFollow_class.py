@@ -4,19 +4,22 @@ import controlers as ctrl
 import numpy as np
 import scipy.stats as stat
 
-
+# Potential problems:
+# Damping ratio needs to be raised
+# rise time needs to be tuned
+# maximum angle needs to be lowered.
 #Navigation Parameters:
-target = 0.2 #Units that the camera uses
+target = 0 #in inches. Will need to convert the camera units
 
 #Controller Parameters:
-t = 1 #Rise time (seconds)
-z = 0.707 #Damping ratio
-sigma = 0.01 # Dirty Derivative value
+t = .75 #Rise time (seconds)
+z = .707#Damping ratio- The longer period between updating the controller the higher value this needs to be. For very small .707
+sigma = 0.05 # Dirty Derivative value
 
 #Saturation Limits:
 vmax = 5 #in/s
 vmin = 0 #in/s
-ThetaMax = np.pi/6 
+ThetaMax = np.pi/2 -.2 #because we are using an observer, we can increase our maximum theta
 ThetaMin = -1*ThetaMax
 Dmax = 2*vmax #difference in speed between the two wheels
 Dmin = -1*Dmax
@@ -31,11 +34,50 @@ b0 = vmax/L
 a0 = a1 = 0
 
 class WallFollow:
-    def __init__(self):
-        self.WF = ctrl.PD2ndOrderADV(b0, a1, a0,              #Coupled system transfer function variables
-                                     t, z, sigma, ctrl.live,    #Controller parameters
-                                     Dmin, Dmax               #output saturation
-                                     )
+    def __init__(self, sim = False):
+        if(sim):
+            self.WF = ctrl.PD2ndOrderADV(b0, a1, a0,              #Coupled system transfer function variables
+                                        t, z, sigma, .01,    #Controller parameters
+                                        Dmin, Dmax               #output saturation
+                                        )
+        else:
+            self.WF = ctrl.PD2ndOrderADV(b0, a1, a0,              #Coupled system transfer function variables
+                                            t, z, sigma, ctrl.live,    #Controller parameters
+                                            Dmin, Dmax               #output saturation
+                                            )
+            
+    def update_sim(self, theta, y, Ts):
+        self.WF.Tstep = Ts #Set time step to a custom value
+
+        #Run controller to determine turn rate:
+        d = self.WF.update(target, y)
+        
+        #System coupling:
+        if theta >= ThetaMax:
+            if d > 0: #allow the robot to go back
+                d = 0 #Don't go past theta max
+                v = vmax
+            else:
+                v = vmax - (vmax-vmin)*(abs(d)/Dmax)
+        elif theta <= ThetaMin:
+            if d < 0: #allow the robot to go back
+                d = 0 #Don't go past theta max
+                v = vmax
+            else:
+                v = vmax - (vmax-vmin)*(abs(d)/Dmax)
+        else:
+            v = vmax - (vmax-vmin)*(abs(d)/Dmax)
+
+
+        dtheta = d/L #Convert to rad/s
+        
+
+        #return the controller parameters and the r**2 value
+        r = 1 #made up r2 value for code consistency
+        
+
+        return [v, dtheta, r]
+
         
     def update(self, X, Z):
         #Take in the relevant point cloud values and ouput the controlls
@@ -66,7 +108,7 @@ class WallFollow:
         
 
         #return the controller parameters and the r**2 value
-        return [v, dtheta, r]
+        return [v.item(0), dtheta, r]
 
 
 
@@ -77,17 +119,19 @@ class position_observer:
                                [y],
                                [theta]])
         
-    def update_DR(self, v, d, steps): #Dead reaconing
+    def update_DR(self, v, d, Ts): #Dead reaconing
         #Theta will need to be corrected from the controller output based on which way the robot is facing.
         x = self.state.item(0)
         y = self.state.item(1)
         theta = self.state.item(2)
-
+        v = np.array([v]).item(0)
+        d = np.array([d]).item(0)
         #Calculate the difference based on the previous state
-        dist = np.array([[np.sin(theta)*v],
-                         [np.cos(theta)*v],
+        #Because the system is highly non-linear, and the system must operate in nearly all 360deg, we will not linearize
+        dist = np.array([[np.cos(theta)*v],
+                         [np.sin(theta)*v],
                          [d]])
-        dist  *= steps #multiply by the number of steps to get the distance traveled
+        dist  *= Ts #multiply by the elapsed time to get changes
 
         self.state +=dist #Add the movement to the state
 
