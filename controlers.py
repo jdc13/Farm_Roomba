@@ -170,6 +170,7 @@ class PD2ndOrderADV:#PD controller using dirty derivative (pure derivative combi
         #calculate output and return it
              
         u = (ref-y)*self.kp - self.d*self.kd   #Multipy the error by kp, subtract kd*dy
+        self.Ts = Ts #Save to use outside the controller
         return(saturate(u, self.mn, self.mx))
 
     def showParams(self):

@@ -87,14 +87,17 @@ for j in range(0,np.size(y0)):
             
             # v,dtheta, r = WF.update_sim(Theta[i,j], yobs, Tstep*(skips+1))
             # v, dtheta, r = WF.update_sim(thetaobs, y[i,j], Tstep*skips)
-            v, dtheta, r = WF.update_sim(thetaobs, yobs, Tstep*skips)
+            v, dtheta = WF.update_sim(thetaobs, yobs, Tstep*skips)
             location.update_DR(v, dtheta, Tstep*skips)
         if(xobs % update < .25 and flag):
             flag = False
-            location.state[1] += .5*( y[i,j] + .05*(1-2*np.random.rand())-location.state[1])
-            location.state[0] += .5*( x[i,j] + .25*(1-2*np.random.rand())- location.state[0])
-            #More error expected in X update since there will be spacing error.
-            location.state[2] += .75*(Theta[i,j] + .005*(1-2*np.random.rand())- location.state[2])
+            location.correct_x(x[i,j] + .25*(1-2*np.random.rand()), .5)
+            location.correct_y(y[i,j] + .05*(1-2*np.random.rand()), .5)
+            location.correct_theta(Theta[i,j] + .005*(1-2*np.random.rand()), .75)
+            # location.state[1] += .5*( y[i,j] + .05*(1-2*np.random.rand())-location.state[1])
+            # location.state[0] += .5*( x[i,j] + .25*(1-2*np.random.rand())- location.state[0])
+            # #More error expected in X update since there will be spacing error.
+            # location.state[2] += .75*(Theta[i,j] + .005*(1-2*np.random.rand())- location.state[2])
         if(xobs % update > .5):
             flag = True
         obs_xtime[i+1][j] = location.state[0]
@@ -109,16 +112,16 @@ for j in range(0,np.size(y0)):
         y[i+1][j] =y[i][j]+dy
         Theta[i+1][j] =Theta[i][j] + dtheta*Tstep#= ctr.saturate(Theta[i][j]+dtheta,ThetaMin,ThetaMax)
 
-        # if(i % 100 == 1):
-            # pathPlot.cla()
-            # thetaplot.cla()
-    pathPlot.plot(x[0:i,j], y[0:i,j])
-    pathPlot.plot(obs_xtime[1:i,j], obs_ytime[1:i,j])
-    thetaplot.plot(tsim[0:i], Theta[0:i,j])
-    thetaplot.plot(tsim[0:i], obs_thetatime[0:i,j])
+        if(i % 100 == 1):
+            pathPlot.cla()
+            thetaplot.cla()
+            pathPlot.plot(x[0:i,j], y[0:i,j])
+            pathPlot.plot(obs_xtime[1:i,j], obs_ytime[1:i,j])
+            thetaplot.plot(tsim[0:i], Theta[0:i,j])
+            thetaplot.plot(tsim[0:i], obs_thetatime[0:i,j])
 
-    plt.show()
-            # plt.pause(0.001)
+            plt.show()
+            plt.pause(0.01)
 
         #show simulation:
     plt.waitforbuttonpress()

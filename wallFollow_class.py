@@ -70,45 +70,63 @@ class WallFollow:
 
 
         dtheta = d/L #Convert to rad/s
-        
 
-        #return the controller parameters and the r**2 value
-        r = 1 #made up r2 value for code consistency
-        
+        return [v, dtheta]
 
-        return [v, dtheta, r]
+    def update(self, theta, y):
+        d = self.update(target, y)
 
-        
-    def update(self, X, Z):
-        #Take in the relevant point cloud values and ouput the controlls
-        #Depending on the speed the camera can run, this may need to be split into two
-        slope, y, r, p, se = stat.linregress(X,Z)
-        r = r**2
-
-        #Calculate theta value for use in the controller:
-        theta = np.arctan(slope)
-
-        d = self.WF.update(target,y)
-    # print(d)
-    #Determine speed based on turn rate
-    #This may need to be updated to be less abrupt.
+        #System coupling:
         if theta >= ThetaMax:
-            v = vmax
             if d > 0: #allow the robot to go back
                 d = 0 #Don't go past theta max
+                v = vmax
+            else:
+                v = vmax - (vmax-vmin)*(abs(d)/Dmax)
         elif theta <= ThetaMin:
-            v = vmax
-            if d < 0: #allow the robot to turn back
-                d = 0 #Don't go past theta min
+            if d < 0: #allow the robot to go back
+                d = 0 #Don't go past theta max
+                v = vmax
+            else:
+                v = vmax - (vmax-vmin)*(abs(d)/Dmax)
         else:
             v = vmax - (vmax-vmin)*(abs(d)/Dmax)
 
 
-        dtheta = d/L #Convert to rad/s
+        dtheta = d/L #Convert differential to rad/s   
+
+        return [v, dtheta] 
+    
+    # def update(self, X, Z):
+    #     #Take in the relevant point cloud values and ouput the controlls
+    #     #Depending on the speed the camera can run, this may need to be split into two
+    #     slope, y, r, p, se = stat.linregress(X,Z)
+    #     r = r**2
+
+    #     #Calculate theta value for use in the controller:
+    #     theta = np.arctan(slope)
+
+    #     d = self.WF.update(target,y)
+    # # print(d)
+    # #Determine speed based on turn rate
+    # #This may need to be updated to be less abrupt.
+    #     if theta >= ThetaMax:
+    #         v = vmax
+    #         if d > 0: #allow the robot to go back
+    #             d = 0 #Don't go past theta max
+    #     elif theta <= ThetaMin:
+    #         v = vmax
+    #         if d < 0: #allow the robot to turn back
+    #             d = 0 #Don't go past theta min
+    #     else:
+    #         v = vmax - (vmax-vmin)*(abs(d)/Dmax)
+
+
+    #     dtheta = d/L #Convert to rad/s
         
 
-        #return the controller parameters and the r**2 value
-        return [v.item(0), dtheta, r]
+    #     #return the controller parameters and the r**2 value
+    #     return [v.item(0), dtheta, r]
 
 
 
@@ -135,6 +153,15 @@ class position_observer:
 
         self.state +=dist #Add the movement to the state
 
+    def correct_x(self, x, confidence):
+        self.state[0] += confidence*(x - self.state[0])
+
+    def correct_y(self, y, confidence):
+        self.state[1] += confidence*(y - self.state[1])
+
+    def correct_theta(self, theta, confidence):
+        self.state[2] += confidence*(theta - self.state[2])
+    
     def update_MXT(self, xm, tm): #update the x and the theta based on the distance from the wall
         # measured values for x and theta will need to be adjusted for which wall the robot is on.
         
