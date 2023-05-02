@@ -26,8 +26,7 @@ class state:
     finish = 6          #Move from the end of the last row to the final location. Store the map to a file
 
 #Location tracking
-#I moved these out of states so that states is dedicated to the state machine
-# loc_phys = np.zeros((1,2), float) #X and Y coordinates
+# I moved these out of states so that states is dedicated to the state machine
 location = WF.position_observer(6, -6) #Initialize location observer with the robot in the corner (center of the robot offset by 6")
 loc_map = np.zeros((1,2), int) # row and plant location
 
@@ -86,7 +85,7 @@ theta_m = np.arctan(slope)
 
 
 
-location.correct_x(x measurement, .5)
+location.correct_x(x_m, .5)
 location.correct_y(y_m, .5)
 location.correct_theta(theta_m, .75)
 # fine tune

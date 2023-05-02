@@ -39,10 +39,6 @@
     # https://dev.intelrealsense.com/docs/using-depth-camera-with-raspberry-pi-3
     # https://www.reddit.com/r/realsense/comments/hn0hfe/anyone_about_to_install_pyrealsense2_on_raspbian/
     
-#Calibration Error evaluation
-    #Error from bias - compare average value with the true value
-    #Random/system error - standard deviation of the individual points.
-
 #Compatibility fix for raspberry pi
 try:
     #This block will run on a PC
@@ -64,8 +60,17 @@ import time
 
 
 class RSCam:
+    '''
+    A class for implementing the Intel RealSense D415. 
+
+    '''
     
     def __init__(self,Range = "Long"): #Lower range = lower resolution
+        '''
+        Lower range = lower resolution. Options are:
+        "Long", "Mid", "Short"
+        Default is "Long"
+        '''
         #Set up RS objects
         self.pc = rs.pointcloud()
         self.pipeline = rs.pipeline()
@@ -75,7 +80,6 @@ class RSCam:
         pipeline_wrapper = rs.pipeline_wrapper(self.pipeline)
         pipeline_profile = self.config.resolve(pipeline_wrapper)
         device = pipeline_profile.get_device()
-        device_product_line = str(device.get_info(rs.camera_info.product_line))
         
         # Set the detection range of the camera
         if Range == "Long":
@@ -96,10 +100,16 @@ class RSCam:
         self.pipeline.start(self.config)
         self.align = rs.align(rs.stream.color)
 
-    def get_frames(self): #Return a matched & aligned set of color and depth frames
+    def get_frames(self): 
+        '''
+        Retrieve and align data from the camera.
+        Data is stored as RS frames and as numpy arrays for different processing tasks. 
+        The numpy arrays are returned by this function.
+        '''
         while True:
         # Wait for a coherent pair of frames: depth and color
             frames = self.pipeline.wait_for_frames()
+            
             #align frames
             self.frames = self.align.process(frames)
             self.depth_frame = frames.get_depth_frame()
@@ -109,7 +119,7 @@ class RSCam:
             else:
                 break
         
-        # Convert images to numpy arrays
+        # Convert images to numpy arrays for OpenCV processing
         self.depth_image = np.asanyarray(self.depth_frame.get_data())
         self.color_image = np.asanyarray(self.color_frame.get_data())
         
@@ -117,6 +127,10 @@ class RSCam:
         return [self.color_image, self.depth_image]
 
     def usr_image(self):
+        '''
+        Create and return a side by side image of the color image and depth map
+        '''
+        
         # Change the depth image to a color map to make it easier to see
         depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(self.depth_image, alpha=0.03), cv2.COLORMAP_JET)
         
@@ -129,16 +143,22 @@ class RSCam:
         else:
             return np.hstack((self.color_image,depth_colormap)) #Combine Images
           
-    def calibrate(self):
-        pass #place holder
-
-    def deproject_Point(self, x = np.zeros(2)): #Given a 2D point in the image space, find the 3D point in real space
+    def deproject_Point(self, x = np.zeros(2)): 
+        '''
+        Given a 2D point in the image space, find the 3D point in real space
         # Note: This is a processor intense process. It is better to use FilteredCloud() for multiple points
+        '''
+
         depth_intrin = self.depth_frame.profile.as_video_stream_profile().intrinsics
         depth = self.depth_frame.get_distance(x[0],x[1])
         return rs.rs2_deproject_pixel_to_point(depth_intrin, x, depth)
 
-    def FilteredCloud(self, mask): #return a point cloud of no more than 100 points based on a cv2 mask
+    def FilteredCloud(self, mask): 
+        '''
+        Return a point cloud of no more than a set number of points specific to the hardware
+        being used. The points will corespond to unmasked locations in the input mask.
+        '''
+
         depth = self.depth_frame
         #Generate the point cloud
         self.pc.map_to(self.color_frame) 
@@ -155,6 +175,7 @@ class RSCam:
         # Because RealSense isn't officially supported, don't expect this to be fixed.
         # To limit the number of bad points we waste time processing, we will create a mask based on 
         # the depth image.
+        
         depthMask = cv2.inRange(self.depth_image,0,1) #This mask finds the bad data points
 
         #Combine the depth mask with the input mask.
@@ -194,7 +215,7 @@ class RSCam:
             cord = list(temp)
             
             if sum(cord) != 0: #Check to make sure a bad point didn't slip through
-                objectCloud.append(cord) #Good data point add it and move to the next
+                objectCloud.append(cord) #Good data point, add it and move to the next
                 i += n #Skip n coordinates
             else:
                 i +=1 #Bad data point, reject it.
