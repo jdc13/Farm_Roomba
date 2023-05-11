@@ -44,6 +44,94 @@ map = pd.DataFrame(np.zeros((3,9)),
 
 # add switch statement
 
+# add switch statement
+state = 'init'
+
+bulbCounter = 0
+rowCounter = 0
+
+while(1==1):
+    match state:
+        case 'init':
+            SetUp()
+            state = 'wallfollow'
+            ## init
+            # set up
+            # wallfollow
+
+        case 'wallfollow':
+            #tuple for the motor commands
+            motorCmnds = getMotorCmnds
+            #update motor commands
+            UpdateMotors(motorCmnds)
+            state = Sample(bulbCounter,rowCounter)
+            ## wallfollow
+            # update motors
+            # sample
+            # if Harvest
+            #   bool isAtBol (returns when we think we are at a bol
+            #   Harvest
+
+        case 'harvest':
+            ## Harvest
+            # fine tune
+            # color functions
+            # call harvest(pass bolLoc, ripeLoc)
+            # map
+            # bulbCounter++
+            # return done
+            #   status pin to return done
+            # reset status pin
+            # WallFollow
+
+            LineUp()
+            harvest()# char h. l, b, n
+            UpdateMap(map)
+            bulbCounter+=1
+            WaitTillDone()
+                #in function wait till pin is high
+                # reset the pin
+            state = 'wallfollow'
+
+        case 'corner_in':
+            ## RightCorner
+            # turn corner
+            # reset bol counter
+            # return done
+            #   status pin to return done
+            # reset status pin
+            # WallFollow
+            turnLeft()
+            bulbCounter = 0
+            WaitTillDone()
+            state = 'wallfollow'
+
+        case 'corner_out':
+            ## LeftCorner
+            # turn corner
+            # reset bol counter
+            # return done
+            #   status pin to return done
+            # reset status pin
+            # WallFollow
+            turnRight()
+            bulbCounter = 0
+            WaitTillDone()
+            state = 'wallfollow'
+
+        case'end':
+            ##end
+            # maybe go back to start?
+            # write map
+            # idle
+            ToCorner()
+            # export CSV file in the prescribed format:
+            manPD = pd.DataFrame(map)
+            manPD.to_csv("map.csv", index_label="Row:")
+            Idle()
+
+
+
 ## init
 # set up
 # wallfollow
