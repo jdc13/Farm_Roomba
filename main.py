@@ -61,7 +61,10 @@ while(1==1):
 
         case 'wallfollow':
             #tuple for the motor commands
-            motorCmnds = getMotorCmnds
+            
+            #gets new motoer cmnds
+            
+            [v,dtheta] = wallFollow.update(location.state[1],location.state[2])
             #update motor commands
             UpdateMotors(motorCmnds)
             state = Sample(bulbCounter,rowCounter)
