@@ -30,6 +30,13 @@ class state:
 location = WF.position_observer(6, -6) #Initialize location observer with the robot in the corner (center of the robot offset by 6")
 loc_map = np.zeros((1,2), int) # row and plant location
 
+#The following need to be determined by looking at the scale map
+boll_dist = 6 #Distance between bolls Set so that next boll is in field of view
+expected_boll = 3 #location of next expected boll
+rowbnd_max = 48
+rowbnd_min = 24
+
+
 #Controllers:
 wallFollow = WF.WallFollow()
 
@@ -47,13 +54,13 @@ map = pd.DataFrame(np.zeros((3,9)),
 # add switch statement
 state = 'init'
 
-bulbCounter = 0
+bollCounter = 0
 rowCounter = 0
 
 while(1==1):
     match state:
         case 'init':
-            SetUp()
+            # SetUp() This case is more a place holder for everything above the while loop. 
             state = 'wallfollow'
             ## init
             # set up
@@ -64,10 +71,34 @@ while(1==1):
             
             #gets new motoer cmnds
             
-            [v,dtheta] = wallFollow.update(location.state[1],location.state[2])
+            [v,dtheta] = wallFollow.update(location.state[1],location.state[2]) #need to correct angle on rows where the robot is driving the other way.
             #update motor commands
             UpdateMotors(motorCmnds)
-            state = Sample(bulbCounter,rowCounter)
+            location.update_DR(v,dtheta) #update location observer
+
+            #State change triggers:
+            if(location.state[0] > rowbnd_max):
+                expected_boll -= boll_dist #Step back the expected boll location
+                rowCounter += 1 #increment row
+                bollCounter = 1 #reset boll
+                state = "corner_in"
+                 
+            elif(location.state[0] < rowbnd_min):
+                expected_boll += boll_dist
+                rowCounter += 1 #increment row
+                bollCounter = 1 #reset boll
+                state = "corner_out"
+
+            elif(
+                (rowCounter % 2 == 1 and location.state[0] > expected_boll)
+                or
+                (rowCounter % 2 ==0 and location.state[0] < expected_boll)
+                ):
+                bollCounter +=1 #increment boll
+                UpdateMotors(stop)
+                state = "harvest"
+                
+            # state = Sample(bulbCounter,rowCounter)
             ## wallfollow
             # update motors
             # sample
