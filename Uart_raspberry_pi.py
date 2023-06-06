@@ -1,57 +1,87 @@
-# Pi Coms for Uart Transmission
-# 5/10/2023
+# Send and receive Raspberry Pi
+# Brian Jones 6/6/2023
+# The code here is to be used for dead
+# reckoning functions in order for the pi
+# to know when a task has been received, as
+# well as been completed by the pico
 
-import serial
 import time
+import serial
 
-print("josh can't tuype with lag")
-#with open('/boot/config.txt', 'a') as f:
- #   f.write('enable_uart=1\n')
-  #  f.write('dtoverlay-uart3\n')
-  
-    # There is also the following option that should connect as well, the issue
-    # is that I'm unsure what it does differently. I'm sure that what currently
-    # is in place will always want pins 8 and 10
-    # serial.Serial('/dev/ttyS0', 9600) 
-# pico  = serial.Serial('/dev/serial0', 9600)
+# Initializes pins for uart coms to be used, 9600 baud rate
 pico = serial.Serial('/dev/serial0', 9600)
 
-run = True
-color = "green"
-while run == True:
-    # Send colors over serialport to be interpretted
-    if color == "green":
-        print("check")
-        pico.write(b"green")
-        print("did we make it?")
-        #esp32.write(b"green")
-        print("GREEN written to both boards")
-        time.sleep(1) 
-        #pico_msg = pico.readline().decode().strip()
+start_loop = True
+counter = 0
 
+while start_loop == True:
+    if counter == 0:
+        # Sends command
+        pico.write(b"harvest01")
+        print("Sent pico 'harvest01'")
+        
+        # Looks to see if command has been received
+        time.sleep(0.1)
+        print("hello")
+        message = pico.readline().decode().strip()
+        print(message)
+        if message == "starting harvest01":
+            print("Pico has received my message 'harvest01'!")
+        else:
+            print ("error, bad send brian")
             
-        print("success!")
-        color = "yellow"
-        time.sleep(1)
-    
-    if color == "yellow":
-        pico.write(b"yellow")
-        #esp32.write(b"yellow")
-        print("YELLOW written to both boards")
-        time.sleep(1)
+        # Looks to see if command has been completed
 
-        print("success!")
-        color = "red"
-        time.sleep(1)
-    
-    if color == "red":
-        pico.write(b"red")
-        #esp32.write(b"red")
-        print("RED written to both boards")
-        time.sleep(1)
-
-        print("success!")
-        color = "green"
-        time.sleep(1)
-    
-    
+        message = pico.readline().decode.strip()
+        if message == "finished harvest01":
+            print("Pico has completed my message 'harvest01'!")
+        else:
+            print ("error, bad send brian")
+        
+        counter = counter + 1
+        
+        
+    if counter == 1:
+        # Sends command
+        pico.write(b"harvest10")
+        print("Sent pico 'harvest10'")
+        
+        # Looks to see if command has been received
+        pico_msg = pico.readline().decode().strip()
+        if pico_msg == "starting harvest10":
+            print("Pico has received my message 'harvest10'!")
+        else:
+            print ("error, bad send brian")
+            
+        # Looks to see if command has been completed
+        pico_msg = pico.readline().decode.strip()
+        if pico_msg == "finished harvest10":
+            print("Pico has completed my message 'harvest10'!")
+        else:
+            print ("error, bad send brian")
+        
+        counter = counter + 1
+        
+    if counter == 2:
+        # Sends command
+        pico.write(b"harvest11")
+        print("Sent pico 'harvest11'")
+        
+        # Looks to see if command has been received
+        pico_msg = pico.readline().decode().strip()
+        if pico_msg == "starting harvest11":
+            print("Pico has received my message 'harvest11'!")
+        else:
+            print ("error, bad send brian")
+            
+        # Looks to see if command has been completed
+        pico_msg = pico.readline().decode.strip()
+        if pico_msg == "finished harvest11":
+            print("Pico has completed my message 'harvest11'!")
+        else:
+            print ("error, bad send brian")
+        
+        counter = counter + 1
+        
+        
+        
