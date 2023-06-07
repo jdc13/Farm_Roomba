@@ -26,7 +26,9 @@ def wait_for_start(timeout_duration, command):
             if message == "starting " + command:
                 print("pico started correct command!")
                 return "success"
-            
+            elif message == "bad send":
+                print("unknown command was sent.")
+                return "bad send"
             elif message != "starting " + command:
                 print("pico messaged the wrong message!", message)
                 return "error"
@@ -44,12 +46,16 @@ def wait_for_completion(timeout_duration, command):
             message = pico.readline().decode().strip()
             print("recieved message: ", message)
             
-            if message == "finished " + command:
+            if message == "completed " + command:
                 print("easy dub, task was completed succesfully.")
                 return "success"
-            elif message != "finished " + command:
+            elif message != "completed " + command:
                 print("reached too close to the sun here, didn't work")
                 return "error"
+            
+    if (time.time() - start_time) >= timeout_duration:
+        print("Error: timeout of message.")
+        return "error"
                 
             
             
@@ -63,7 +69,7 @@ def wait_for_completion(timeout_duration, command):
 # it could be possible to revert back to wall follow but without testing im unsure how effective it would
 # be.
 def send_command(command):
-    pico.write(command)
+    pico.write(command.encode())
     print("Sent pico the command: ", command)
     sent = wait_for_start(5, command)
     error_count = 0
@@ -72,11 +78,12 @@ def send_command(command):
             print("Small error in communication, retrying now!")
             error_count += 1
             sent = wait_for_start(5, command)
-            
+    elif sent == "bad send":
+        return False
                         
     elif sent == "success":
-        print("Pico Succesfully recieved and started my command!")
-        completed = wait_for_completetion(10, command) 
+        print("Pico Succesfully received and started my command!")
+        completed = wait_for_completion(10, command) 
         if completed == "error":  
             print("Pico had a error. brians sad.")
             return False
