@@ -227,7 +227,7 @@ class RSCam:
 
 
 
-#Use area below as example code:
+# # Use area below as example code:
 # def nothing(blank):
 #     pass
 

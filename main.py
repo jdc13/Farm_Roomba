@@ -7,6 +7,7 @@ import scipy.stats as stat
 
 import wallFollow_class as WF
 import Hardware.RealSense as RS
+import Hardware.Filter as Filter
 
 
 
@@ -108,19 +109,63 @@ while(1==1):
 
         case 'harvest':
             ## Harvest
+            #update realsense frames
+            cam.get_frames()
+            #Generate masks
+            lock, unripe, ripe, wall = Filter.Harvest_Filter(cam.color_image)
+            
+            # Map
+            totalbolls = ripe | unripe #bitwise or to combine the two measured bolls
+            #Correct from index number to actual number:
+            if(totalbolls == 2):
+                totalbolls = 1
+            elif(totalbolls == 3):
+                totalbolls =2
+
+            if(rowCounter%2 == 0):# we are only required to map even rows
+                boll = 'P' + str(bollCounter)
+                map.loc[rowCounter, boll] = totalbolls
+            #Need to save the map to the flashdrive here
+            print(map)
             # fine tune
-            # color functions
-            # call harvest(pass bolLoc, ripeLoc)
-            # map
-            # bulbCounter++
+                #Will need to move the robot by lock*correction factor
+            LineUp() #Needs camera and pico - input is y distance MAKE SURE WE UPDATE THE OBSERVER!!!
+            
+            harvest(ripe)# see harvest filter function for value meanings
             # return done
+
+            #Obesrver correction: (we can do this while harvesting to have some || processing going on.)
+            #Correct y location based on the boll
+            if(rowCounter%2 == 0): #if on an even row we are measuring from the far wall to the boll
+                m_y = -96 + 24 + boll_dist * bollCounter
+            else: #if on an odd row we are measuring from the near wall to the boll
+                m_y = -24 - boll_dist*bollCounter
+            location.update_MY(m_y)
+            
+            #Correct x location based on a linear regression of the point cloud from the wall:
+            ## Generate point cloud
+            ### Generate and combine masks
+            depthMask = cv2.inRange(cam.depth_image,0,1) #This mask filters out the bad data
+            #### Combine the depth mask and the wall color mask
+            wall = wall/225 #Make the wall mask all 1s for next step
+            mask1 = np.logical_and(depthMask, wall) #And together so we get all of the points that are both good and the correct color
+            pc = cam.FilteredCloud(mask1)
+
+            ## Analyze the point cloud
+            #clear any data that is outside a box
+            pc = cv2.inrange(pc, [.004, .1], [-1,1]) #These values will need to be adjusted expiramentally.
+
+            #Get the points in the x-z plane
+            X = np.transpose(pc[:,0]) #first column of the point cloud
+            Z = np.transpose(pc[:,2]) #third column of the point cloud
+
+            slope, x, r, p, se = stat.linregress(X, Z)
+            theta = np.arctan(slope)
+
+            #update the observer:
+            location.update_MXT(x, theta)
             #   status pin to return done
             # reset status pin
-            # WallFollow
-
-            LineUp()
-            harvest()# char h. l, b, n
-            UpdateMap(map)
             bulbCounter+=1
             WaitTillDone()
                 #in function wait till pin is high
