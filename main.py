@@ -111,6 +111,8 @@ while(1==1):
             ## Harvest
             #update realsense frames
             cam.get_frames()
+            #Blur images to help with filtering
+            cam.color_image =  cv2.blur(cam.color_image, [20,20])
             #Generate masks
             lock, unripe, ripe, wall = Filter.Harvest_Filter(cam.color_image)
             

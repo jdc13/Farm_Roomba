@@ -23,6 +23,7 @@ import scipy.stats as stat
 import matplotlib.pyplot as plt
 #time library for identifying the places where time is being lost
 import time
+from Hardware import Filter as F
 
 #custom libraries:
 import controlers as ctr
@@ -79,29 +80,62 @@ plt.xlim([-.3,.3])
 plt.ylim([0, .6])
 
 while(1): #will add an exit condition later.
-    told = time.ctime()
-    cam.get_frames()#update camera data
-    tnew = time.ctime()
-    # print("time to get frames ", tnew-told)
-    
-    # Will generate a mask that filters things out later.
-    mask1 = np.ones(np.shape(cam.depth_image)) * 255
-    depthMask = cv2.inRange(cam.depth_image,0,1) #This mask filters out the bad data
+    #  Initialize variables that we will need later.
+    slope = 0.
+    y = 0.
+    X = np.array([1])
+    Y = np.array([1])
+    Z = np.array([1])
+    while(1): #Change to a for loop to prevent getting stuck
 
-    # Generate the point cloud:
-    told = time.ctime()
-    pc = cam.FilteredCloud(mask1)
-    tnew = time.ctime()
-    # print("time to generate the point cloud:  ", tnew-told)
+        # This try function is because the realsense camera was feeding bad data to the wall follower, to the point it was causing crashes.
+        # If this fails don't update the observer. 
+        # We should still be able to read the locations of the bolls from the camera.
+        #Potential for fatal error:
+        ##### Goes out of range of the camera and is unable to update the observer. May cause the robot to crash.   
+        # try: 
+        if(True):
+                 
+            told = time.ctime()
+            cam.get_frames()#update camera data
+            print("Have new frame")
+            cam.color_image =  cv2.blur(cam.color_image, [20,20])
+            cv2.imshow("Blured image and depth image", cam.usr_image())
+            #Blur the image to get a better filter result
+            
+            tnew = time.ctime()
+            # print("time to get frames ", tnew-told)
+            
+            # Will generate a mask that filters things out later.
+            lock, unripe_bolls, ripe_bolls, mask1 = F.Harvest_Filter(cam.color_image)
+            # mask1 = cv2.inRange(cam.color_image, F.wall_low, F.wall_high)
+            print(mask1)
+            cv2.imshow("mask", mask1)
+            depthMask = cv2.inRange(cam.depth_image,0,1) #This mask filters out the bad data
 
-    #analyze the point cloud:
-    #Get the points in the x-z plane
-    X = np.transpose(pc[:,0]) #first column of the point cloud
-    Z = np.transpose(pc[:,2]) #third column of the point cloud
+            # Generate the point cloud:
+            told = time.ctime()
+            pc = cam.FilteredCloud(mask1)
+            tnew = time.ctime()
+            # print("time to generate the point cloud:  ", tnew-told)
+
+        
+        
+            #linear regression:
+        
+            # Analysis of the data started failing after implementing the filters. Set to keep trying to get a good frame until it works.
+            #analyze the point cloud:
+            #Get the points in the x-z plane
+            X = np.transpose(pc[:,0]) #first column of the point cloud
+            Z = np.transpose(pc[:,2]) #third column of the point cloud
+            slope, y, r, p, se = stat.linregress(X, Z)
+            r = r**2
+        # except:
+        #     print("bad data")
+        # finally:
+        #     break
+
     
-    #linear regression:
-    slope, y, r, p, se = stat.linregress(X, Z)
-    r = r**2
 
     # print(slope)
     #Find the angle and run the controller.

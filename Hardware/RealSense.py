@@ -260,6 +260,7 @@ class RSCam:
 
 # while(1):
 #     cam.get_frames()
+#     cam.color_image =  cv2.blur(cam.color_image, [20,20])
 #     cv2.imshow('RealSense', cam.usr_image())
 #     # print(cam.deproject_Point(np.array([100,100])))
 
