@@ -43,6 +43,7 @@ wallFollow = WF.WallFollow()
 
 #hardware
 cam = RS.RSCam(Range= "Short")
+cam.get_frames() #Reject first frame (it's really dark.)
 
 #initialize a dataframe of 0s the size of the map
 #6 rows, 9 plants, only 3 rows are relevant
@@ -109,15 +110,54 @@ while(1==1):
 
         case 'harvest':
             ## Harvest
-            #update realsense frames
-            cam.get_frames()
-            #Blur images to help with filtering
-            cam.color_image =  cv2.blur(cam.color_image, [20,20])
-            #Generate masks
-            lock, unripe, ripe, wall = Filter.Harvest_Filter(cam.color_image)
+            #Variables that will be accessed outside of their scope:
+            slope = 0.
+            y = 0.
+            X = np.array([1])
+            Y = np.array([1])
+            Z = np.array([1])
+            lock = 0
+            unripe_bolls = 0
+            ripe_bolls = 0
+
+            for randomcounter in range(10): #Try to get 10 images. If it fails don't update the observer.
+                try:# allows for errors
+                    cam.get_frames() #update camera data
+
+                    #smooth the image for better processing:
+                    cam.color_image = cv2.blur(cam.color_image, [10,10])
+                    kernel = np.array([[-1,-1,-1],
+                                       [-1,9,-1],
+                                       [-1,-1,-1]])
+                    cam.color_image = cv2.filter2D(cam.color_image, -2, kernel)
+
+                    #Run Filters to get masks
+                    lock, unripe_bolls, ripe_bolls, mask1 = F.Harvest_Filter(cam.color_image)
+
+                    #Mask to filter out bad data
+                    depthMask = cv2.inRange(cam.depth_image,0,1) #This mask filters out the bad data
+                    
+                    #Generate the point cloud
+                    pc = cam.FilteredCloud(mask1)
+
+                    #Linear regression (usually where the errors are)
+                    #Get the points in the x-z plane
+                    X = np.transpose(pc[:,0]) #first column of the point cloud
+                    Z = np.transpose(pc[:,2]) #third column of the point cloud
+                    slope, y, r, p, se = stat.linregress(X, Z)
+                    r = r**2
+                except:
+                    print("bad data")
+                finally:
+                        location.correct_theta(np.arctan(slope) - np.pi*(1-rowCounter%2), .75)#Adjust theta, add a correction factor for when on even rows
+                        # location.correct_x() #Need to do some math to figure out how to correct this one.
+                        break
+
+
+            
             
             # Map
-            totalbolls = ripe | unripe #bitwise or to combine the two measured bolls
+            totalbolls = ripe_bolls | unripe_bolls #bitwise or to combine the two measured bolls
             #Correct from index number to actual number:
             if(totalbolls == 2):
                 totalbolls = 1
@@ -136,7 +176,7 @@ while(1==1):
             harvest(ripe)# see harvest filter function for value meanings
             # return done
 
-            #Obesrver correction: (we can do this while harvesting to have some || processing going on.)
+            
             #Correct y location based on the boll
             if(rowCounter%2 == 0): #if on an even row we are measuring from the far wall to the boll
                 m_y = -96 + 24 + boll_dist * bollCounter
@@ -145,29 +185,29 @@ while(1==1):
             location.update_MY(m_y)
             
             #Correct x location based on a linear regression of the point cloud from the wall:
-            ## Generate point cloud
-            ### Generate and combine masks
-            depthMask = cv2.inRange(cam.depth_image,0,1) #This mask filters out the bad data
-            #### Combine the depth mask and the wall color mask
-            wall = wall/225 #Make the wall mask all 1s for next step
-            mask1 = np.logical_and(depthMask, wall) #And together so we get all of the points that are both good and the correct color
-            pc = cam.FilteredCloud(mask1)
+            # ## Generate point cloud
+            # ### Generate and combine masks
+            # depthMask = cv2.inRange(cam.depth_image,0,1) #This mask filters out the bad data
+            # #### Combine the depth mask and the wall color mask
+            # wall = wall/225 #Make the wall mask all 1s for next step
+            # mask1 = np.logical_and(depthMask, wall) #And together so we get all of the points that are both good and the correct color
+            # pc = cam.FilteredCloud(mask1)
 
-            ## Analyze the point cloud
-            #clear any data that is outside a box
-            pc = cv2.inrange(pc, [.004, .1], [-1,1]) #These values will need to be adjusted expiramentally.
+            # ## Analyze the point cloud
+            # #clear any data that is outside a box
+            # pc = cv2.inrange(pc, [.004, .1], [-1,1]) #These values will need to be adjusted expiramentally.
 
-            #Get the points in the x-z plane
-            X = np.transpose(pc[:,0]) #first column of the point cloud
-            Z = np.transpose(pc[:,2]) #third column of the point cloud
+            # #Get the points in the x-z plane
+            # X = np.transpose(pc[:,0]) #first column of the point cloud
+            # Z = np.transpose(pc[:,2]) #third column of the point cloud
 
-            slope, x, r, p, se = stat.linregress(X, Z)
-            theta = np.arctan(slope)
+            # slope, x, r, p, se = stat.linregress(X, Z)
+            # theta = np.arctan(slope)
 
-            #update the observer:
-            location.update_MXT(x, theta)
-            #   status pin to return done
-            # reset status pin
+            # #update the observer:
+            # location.update_MXT(x, theta)
+            # #   status pin to return done
+            # # reset status pin
             bulbCounter+=1
             WaitTillDone()
                 #in function wait till pin is high
