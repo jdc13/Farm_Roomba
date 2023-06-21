@@ -86,6 +86,8 @@ def inside_left():
 # so I may setup a quicker second uart connection for the numbers to read from. But this should be unnecessary
 # atm.
 # The math of this function needs its variables double checked. atm I havent done this personally.
+'''
+# for use with realsence
 def motors(velocity, direction):
     print("Driving motors!")
     v = velocity/1000
@@ -107,7 +109,7 @@ def motors(velocity, direction):
     # Temprarily to test my code. No need to keep once I confirm the code is complete.
     time.sleep(5)
     return True
-    
+  '''  
 # Splices string simply for the motors command to get three variables. The command drive,
 # the velocity, and direction.
 def splice_string(string):
@@ -156,6 +158,8 @@ while True:             # Keeps it always running
             completed = harvest(1, 0)
         elif message_str == "harvest11":		# Harvest Both High and Low
             completed = harvest(1, 1)
+        elif  message_str == "harvest00":		# Harvest Nothing
+            completed = harvest(0, 0)
         elif message_str == "get_to_wall":		# Starts from corner and needs to get within real sense range of the first wall
             completed = get_to_wall()
         elif message_str == "outside_right":	# Is supposed to turn 180 degrees to the new row
@@ -164,6 +168,8 @@ while True:             # Keeps it always running
             completed = inside_left()
         elif message_str == "go_home":			# Is supposed to bring the robot to the final corner
             completed = go_home()
+            # elif message_str == "go_forward":		# Will move robot to next possible boll location
+  
         
         # This motors command is the toughest because it needs to splice the command from integers sent. Me and carter
         # decided 6 ints were more than necessary for motors velocity and direction, so we splice it into three sets of
