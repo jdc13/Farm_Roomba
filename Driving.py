@@ -1,7 +1,7 @@
 from machine import Pin, PWM
 from time import sleep
 
-class Driving:
+class Driving_control:
     def __init__(self):
 
         self.leftPWM = PWM(Pin(15))
@@ -105,7 +105,7 @@ class Driving:
         self.DriveStraight(1600)
         
 while True:
-    drive_commands= Driving()
+    drive_commands= Driving_control()
     drive_commands.Left_corner()
     #drive_commands.DriveStraight(10000)
     drive_commands.Stop()
