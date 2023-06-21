@@ -136,6 +136,7 @@ class position_observer:
         self.state = np.array([[x],
                                [y],
                                [theta]])
+        self.time_old = 0
         
     def update_DR(self, v, d, Ts): #Dead reaconing
         #Theta will need to be corrected from the controller output based on which way the robot is facing.
@@ -143,13 +144,13 @@ class position_observer:
         y = self.state.item(1)
         theta = self.state.item(2)
         v = np.array([v]).item(0)
-        d = np.array([d]).item(0)
+        d = np.array([d]).item(0) #omega
         #Calculate the difference based on the previous state
         #Because the system is highly non-linear, and the system must operate in nearly all 360deg, we will not linearize
         dist = np.array([[np.cos(theta)*v],
                          [np.sin(theta)*v],
-                         [d]])
-        dist  *= Ts #multiply by the elapsed time to get changes
+                         [d]]) * Ts
+        # dist  *= Ts #multiply by the elapsed time to get changes
 
         self.state +=dist #Add the movement to the state
 

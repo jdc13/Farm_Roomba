@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import cv2
 import scipy.stats as stat
+import time
 
 import wallFollow_class as WF
 import Hardware.RealSense as RS
@@ -63,6 +64,7 @@ while(1==1):
     match state:
         case 'init':
             # SetUp() This case is more a place holder for everything above the while loop. 
+            location.time_old = time.time()
             state = 'wallfollow'
             ## init
             # set up
@@ -76,7 +78,18 @@ while(1==1):
             [v,dtheta] = wallFollow.update(location.state[1],location.state[2]) #need to correct angle on rows where the robot is driving the other way.
             #update motor commands
             UpdateMotors(motorCmnds)
-            location.update_DR(v,dtheta) #update location observer
+
+
+
+            now = time.time()
+            Ts = now-location.time_old
+            location.time_old = now
+            location.update_DR(v,dtheta,Ts) #update location observer
+
+
+
+
+
 
             #State change triggers:
             if(location.state[0] > rowbnd_max):
@@ -212,6 +225,7 @@ while(1==1):
             WaitTillDone()
                 #in function wait till pin is high
                 # reset the pin
+            location.time_old = time.time()
             state = 'wallfollow'
 
         case 'corner_in':
@@ -225,6 +239,7 @@ while(1==1):
             turnLeft()
             bulbCounter = 0
             WaitTillDone()
+            location.time_old = time.time()
             state = 'wallfollow'
 
         case 'corner_out':
@@ -238,6 +253,7 @@ while(1==1):
             turnRight()
             bulbCounter = 0
             WaitTillDone()
+            location.time_old = time.time()
             state = 'wallfollow'
 
         case'end':
