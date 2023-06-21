@@ -8,41 +8,34 @@
 
 import machine
 import time
+from Driving import Driving_control
+from Arm_control import Armcontrol
 
 # Creates a uart connection with Mom, that it will save to, and then respond back that it has been received
 mom = machine.UART(0, baudrate=9600, bits=8, parity=None, stop=1, tx=machine.Pin(12), rx=machine.Pin(1))
+Arm = Armcontrol()
+Drive = Driving_control()
 
 # There is one harvest function, that will get input from the switch statement on what cotton bolls
 # to harvest. This info is passed through and we can program 3 different harvest controls.
 def harvest(high, low):
     if high == 1 and low == 1:
         print("Harvesting High and Low")
-        
-        ###############################################
-        # Carsons code here
-        # or whoever else may write this in the future
-        ###############################################
+        Arm.harvest_time([0,0])
         
         time.sleep(5)
         print("done")
         
     elif high == 1:
         print("Harvesting High")
-        
-        ###############################################
-        # Carsons code here
-        # or whoever else may write this in the future
-        ###############################################
+        Arm.harvest_time([1,0])
+
         time.sleep(5)
         print("done")
          
     elif low == 1:
         print("Harvesting Low")
-        
-        ###############################################
-        # Carsons code here
-        # or whoever else may write this in the future
-        ###############################################
+        Arm.harvest_time([0,1])
         
         time.sleep(5)
         print("done")
@@ -55,11 +48,7 @@ def harvest(high, low):
 # the wall follow code can kick in.
 def get_to_wall():
     print("get to wall")
-    
-    ###############################################
-    # Carsons code here
-    # or whoever else may write this in the future
-    ###############################################
+    Drive.Find_wall()
     
     # Temprarily to test my code. No need to keep once I confirm the code is complete.
     time.sleep(5)
@@ -67,11 +56,7 @@ def get_to_wall():
 # Go home needs to have the roomba dead reckon to a finishing corner
 def go_home():
     print("I want to go home")
-    
-    ###############################################
-    # Carsons code here
-    # or whoever else may write this in the future
-    ###############################################
+    Drive.Find_corner()
     
     # Temprarily to test my code. No need to keep once I confirm the code is complete.
     time.sleep(5)
@@ -81,11 +66,7 @@ def go_home():
 # side of the wall it was just farming.
 def outside_right():
     print("turn right")
-    
-    ###############################################
-    # Carsons code here
-    # or whoever else may write this in the future
-    ###############################################
+    Drive.Right_corner()
     
     # Temprarily to test my code. No need to keep once I confirm the code is complete.
     time.sleep(5)
@@ -94,11 +75,7 @@ def outside_right():
 # in the row it just drove down.
 def inside_left():
     print("yes its a left turn, it may not look like it but it's left.")
-    
-    ###############################################
-    # Carsons code here
-    # or whoever else may write this in the future
-    ###############################################
+    Drive.Left_corner()
     
     # Temprarily to test my code. No need to keep once I confirm the code is complete.
     time.sleep(5)
