@@ -78,14 +78,11 @@ v = 0.
 plt.title("looking down")
 plt.xlim([-.3,.3])
 plt.ylim([0, .6])
+cam.get_frames() #Reject 1st frame
 
 while(1): #will add an exit condition later.
     #  Initialize variables that we will need later.
-    slope = 0.
-    y = 0.
-    X = np.array([1])
-    Y = np.array([1])
-    Z = np.array([1])
+    
     while(1): #Change to a for loop to prevent getting stuck
 
         # This try function is because the realsense camera was feeding bad data to the wall follower, to the point it was causing crashes.
@@ -93,15 +90,20 @@ while(1): #will add an exit condition later.
         # We should still be able to read the locations of the bolls from the camera.
         #Potential for fatal error:
         ##### Goes out of range of the camera and is unable to update the observer. May cause the robot to crash.   
-        # try: 
-        if(True):
+        try: 
+        # if(True):
                  
             told = time.ctime()
             cam.get_frames()#update camera data
             print("Have new frame")
-            cam.color_image =  cv2.blur(cam.color_image, [20,20])
+            #Blur then sharpen the image to get a better filter result
+            cam.color_image =  cv2.blur(cam.color_image,[10,10])
+            kernel = np.array([[-1,-1,-1],
+                               [-1,9,-1],
+                               [-1,-1,-1]])
+            cam.color_image = cv2.filter2D(cam.color_image, -2, kernel)
             cv2.imshow("Blured image and depth image", cam.usr_image())
-            #Blur the image to get a better filter result
+            
             
             tnew = time.ctime()
             # print("time to get frames ", tnew-told)
@@ -130,10 +132,10 @@ while(1): #will add an exit condition later.
             Z = np.transpose(pc[:,2]) #third column of the point cloud
             slope, y, r, p, se = stat.linregress(X, Z)
             r = r**2
-        # except:
-        #     print("bad data")
-        # finally:
-        #     break
+        except:
+            print("bad data")
+        finally:
+            break
 
     
 
@@ -180,5 +182,6 @@ while(1): #will add an exit condition later.
     plt.plot(length, wall)
     plt.plot(length, tar)
     plt.draw()
+    # plt.show()
     plt.pause(0.01)
     plt.cla()

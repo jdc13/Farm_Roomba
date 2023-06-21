@@ -3,7 +3,7 @@ import cv2
 from scipy import ndimage
 
 # HSV Filter codes
-wall_high = np.array([225, 225, 225]) #([70, 255, 120]) # Some areas of the wall are masked, but there is enough visible to get a good reading.
+wall_high = np.array([70, 255, 120]) # Some areas of the wall are masked, but there is enough visible to get a good reading.
 wall_low = np.array([0, 0, 0])
 
 ripe_high = np.array([179, 114, 255]) #The values are really tight, because the glare on the dowells makes them pretty white.
@@ -19,7 +19,7 @@ def find_bolls(mask, tolerance):
     Tolerance is used as a threshold value for the color matching
     '''
     #Divide the mask in 2
-    print(mask)
+    # print(mask)
     [top, bottom] = np.vsplit(mask,2)
     
     bolls = 0 #Starting value
