@@ -156,10 +156,10 @@ while True:             # Keeps it always running
             completed = harvest(0, 1)
         elif message_str == "harvest10":		# Harvest High
             completed = harvest(1, 0)
-        elif message_str == "harvest11":		# Harvest Both High and Low
-            completed = harvest(1, 1)
-        elif  message_str == "harvest00":		# Harvest Nothing
+        elif message_str == "harvest00":		# Harvest Both High and Low
             completed = harvest(0, 0)
+        elif  message_str == "harvest11":		# Harvest Nothing
+            completed = harvest(1, 1)
         elif message_str == "get_to_wall":		# Starts from corner and needs to get within real sense range of the first wall
             completed = get_to_wall()
         elif message_str == "outside_right":	# Is supposed to turn 180 degrees to the new row
