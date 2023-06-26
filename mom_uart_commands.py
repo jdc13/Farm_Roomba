@@ -73,23 +73,28 @@ def send_command(command):
     print("Sent pico the command: ", command)
     sent = wait_for_start(5, command)
     error_count = 0
-    if sent == "error":
-        while error_count < 3:
-            print("Small error in communication, retrying now!")
-            error_count += 1
-            sent = wait_for_start(5, command)
-    elif sent == "bad send":
+#editing method to fix possibility of not returning anything
+    if sent == "bad send":
         return False
-                        
-    elif sent == "success":
-        print("Pico Succesfully received and started my command!")
-        completed = wait_for_completion(10, command) 
-        if completed == "error":  
-            print("Pico had a error. brians sad.")
+    else
+        while sent == "error" && error_count < 3: #if wiat for start retuns 3 errors
+            error_count += 1
+            print("Small error in communication, retrying now! Errors: " + error_count)
+            sent = wait_for_start(5, command)
+        if sent == "error"
             return False
-        elif completed == "success":
-            print("Success! Mom had 100% faith.")
-            return True
+        else # sent  == "success"
+            print("Pico Succesfully received and started my command!")
+            completed = wait_for_completion(10, command) 
+            if completed == "error":  
+                print("Pico had a error. brians sad.")
+                return False
+            elif completed == "success":
+                print("Success! Mom had 100% faith.")
+                return True
+    
+    
+    
     
         
     
