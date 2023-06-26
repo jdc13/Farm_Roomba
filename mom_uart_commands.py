@@ -19,21 +19,26 @@ def wait_for_start(timeout_duration, command):
 
     start_time = time.time()
     while (time.time() - start_time) < timeout_duration:
-        if pico.in_waiting > 0:
-            message = pico.readline().decode().strip()
+        # in_waiting - Return the number of bytes in the receive buffer
+        if pico.in_waiting > 0: # if there are bytes to read in the recieve buffer
+            message = pico.readline().decode().strip()# read in byte array from pico and convert into string
+            # decode - converts bytearray into string - python method
+            # strip - removes spaces at the beginning and end of a string - string method
+            
             print("recieved message: ", message)
             
-            if message == "starting " + command:
+            if message == "starting " + command:# if message is "starting " return success
                 print("pico started correct command!")
                 return "success"
-            elif message == "bad send":
+            elif message == "bad send":# if an unknown or unfamiliar command is sent, return bad send
                 print("unknown command was sent.")
                 return "bad send"
-            elif message != "starting " + command:
+            elif message != "starting " + command:# otherwise return error
+                # could this just be an else statement?
                 print("pico messaged the wrong message!", message)
                 return "error"
                     
-    if (time.time() - start_time) >= timeout_duration:
+    if (time.time() - start_time) >= timeout_duration:# is there is no message returned within time_duration, return error
         print("Error: timeout of message.")
         return "error"
     
@@ -46,14 +51,14 @@ def wait_for_completion(timeout_duration, command):
             message = pico.readline().decode().strip()
             print("recieved message: ", message)
             
-            if message == "completed " + command:
+            if message == "completed " + command:# if command is completed, return success
                 print("easy dub, task was completed succesfully.")
                 return "success"
-            elif message != "completed " + command:
+            elif message != "completed " + command:# if command is not commpleted, return error
                 print("reached too close to the sun here, didn't work")
                 return "error"
             
-    if (time.time() - start_time) >= timeout_duration:
+    if (time.time() - start_time) >= timeout_duration:#timeout error
         print("Error: timeout of message.")
         return "error"
                 
@@ -69,12 +74,13 @@ def wait_for_completion(timeout_duration, command):
 # it could be possible to revert back to wall follow but without testing im unsure how effective it would
 # be.
 def send_command(command):
-    pico.write(command.encode())
-    print("Sent pico the command: ", command)
-    sent = wait_for_start(5, command)
+    pico.write(command.encode())# send the pico a command
+    #encodes the string, using the specified encoding. If no encoding is specified, UTF-8 will be used. - python method
+    print("Sent pico the command: ", command)# print out current action
+    sent = wait_for_start(5, command) 
     error_count = 0
     if sent == "error":
-        while error_count < 3:
+        while error_count < 3: #if wiat for start retuns 3 errors
             print("Small error in communication, retrying now!")
             error_count += 1
             sent = wait_for_start(5, command)
