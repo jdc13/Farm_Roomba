@@ -130,8 +130,8 @@ def harvest_cotton(ripeness):
         send_command("harvest11") #Harvest Nothing
     
 state = 'init'
-bollCounter = 0
-rowCounter = 0
+bollCounter = 1
+rowCounter = 1
 
 while(1==1):
     match state:
@@ -141,11 +141,10 @@ while(1==1):
 
         case 'find_wall':
             send_command("get_to_wall")
-            rowCounter = 1
             state ='harvest'
 
         case 'harvest':
-            while bulbCounter < 8:
+            while bulbCounter < 9:
                 adjust()
                 ripeness = identify() #Colorsensing of each bulb
                 mapping(ripeness, bulbCounter)  #map and store data
@@ -162,12 +161,12 @@ while(1==1):
 
         case 'outisde_right':
             send_command("outside_right")
-            bulbCounter = 0
+            bulbCounter = 1
             state = 'harvest'
 
         case 'inside_left':
             send_command("inside_left")
-            bulbCounter = 0
+            bulbCounter = 1
             state = 'harvest'
 
         case'go_home':
