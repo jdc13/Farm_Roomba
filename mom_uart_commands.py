@@ -104,15 +104,15 @@ def send_command(command):
 #
 ###############################
 
-print("Starting my code.")
-time.sleep(3)
-success = False
-command = input("Please enter a command: ")
+# print("Starting my code.")
+# time.sleep(3)
+# success = False
+# command = input("Please enter a command: ")
 
-success = send_command(command)
-if success == True:
-    print("Operation was sent and completed properly.")
-elif success == False:
-    print("Pico did not fully complete task.")
+# success = send_command(command)
+# if success == True:
+#     print("Operation was sent and completed properly.")
+# elif success == False:
+#     print("Pico did not fully complete task.")
     
     
