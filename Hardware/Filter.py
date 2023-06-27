@@ -45,18 +45,27 @@ def Harvest_Filter(color_image):
     '''
 
     HSV = cv2.cvtColor(color_image, cv2.COLOR_BGR2HSV)
+        # src	input image: 8-bit unsigned, 16-bit unsigned ( CV_16UC... ), or single-precision floating-point.
+        # dst	output image of the same size and depth as src.
+        
     ripe_mask = cv2.inRange(HSV, ripe_low,ripe_high)
     wall_mask = cv2.inRange(HSV, wall_low,wall_high)
     unripe_mask = cv2.inRange(HSV,unripe_low,unripe_high)
+        # src	first input array.
+        # lowerb	inclusive lower boundary array or a scalar.
+        # upperb	inclusive upper boundary array or a scalar.
+        # returns
+        # dst	output array of the same size as src and CV_8U type.
 
-    ripe_bolls = find_bolls(ripe_mask, 100) #This tolerance needs to be found expirimentally
+    #finds boll location in next 2 lines
+    ripe_bolls = find_bolls(ripe_mask, 100) #This tolerance needs to be found expirimentally 
     unripe_bolls = find_bolls(unripe_mask, 100) #Tolerance needs to be found exipirimentally
 
     # Find the location of the ripe bolls
     # combined_mask = np.logical_or(ripe_mask, unripe_mask) #Combine the two masks to look at the ripe and unripe bolls at the same time
-    lock, y = ndimage.center_of_mass(ripe_mask)
+    boll_loc, _ = ndimage.center_of_mass(ripe_mask) # finds location of the center of the boll x(lock) i 0 to ~300(left to right);
 
-    return lock, unripe_bolls, ripe_bolls, wall_mask
+    return boll_loc, unripe_bolls, ripe_bolls, wall_mask
     
 
 
