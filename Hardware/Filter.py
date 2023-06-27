@@ -22,12 +22,12 @@ def find_bolls(mask, tolerance):
     # print(mask)
     [top, bottom] = np.vsplit(mask,2)
     
-    bolls = 0 #Starting value
+    bolls = 11 #Starting value
     # print(np.sum(bottom))
     if(np.sum(bottom) > tolerance):
-        bolls += 1
+        bolls -= 1
     if(np.sum(top) > tolerance):
-        bolls +=10
+        bolls -=10
     
     return bolls
 
@@ -51,11 +51,14 @@ def Harvest_Filter(color_image):
     ripe_mask = cv2.inRange(HSV, ripe_low,ripe_high)
     wall_mask = cv2.inRange(HSV, wall_low,wall_high)
     unripe_mask = cv2.inRange(HSV,unripe_low,unripe_high)
+
         # src	first input array.
         # lowerb	inclusive lower boundary array or a scalar.
         # upperb	inclusive upper boundary array or a scalar.
         # returns
         # dst	output array of the same size as src and CV_8U type.
+    
+    combined_mask = cv2.add(ripe_mask, unripe_mask) #Combine the two masks to look at the ripe and unripe bolls at the same time
 
     #finds boll location in next 2 lines
     ripe_bolls = find_bolls(ripe_mask, 100) #This tolerance needs to be found expirimentally 
@@ -63,7 +66,8 @@ def Harvest_Filter(color_image):
 
     # Find the location of the ripe bolls
     # combined_mask = np.logical_or(ripe_mask, unripe_mask) #Combine the two masks to look at the ripe and unripe bolls at the same time
-    boll_loc, _ = ndimage.center_of_mass(ripe_mask) # finds location of the center of the boll x(lock) i 0 to ~300(left to right);
+    boll_loc, _ = ndimage.center_of_mass(combined_mask) # finds location of the center of the boll x(lock) i 0 to ~300(left to right);
+
 
     return boll_loc, unripe_bolls, ripe_bolls, wall_mask
     

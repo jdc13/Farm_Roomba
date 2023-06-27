@@ -82,6 +82,18 @@ cam.get_frames() #Reject 1st frame
 
 while(1): #will add an exit condition later.
     #  Initialize variables that we will need later.
+    while(1):
+        cam.get_frames()
+        cam.color_image =  cv2.blur(cam.color_image,[10,10])
+        kernel = np.array([[-1,-1,-1],
+                            [-1,9,-1],
+                            [-1,-1,-1]])
+        cam.color_image = cv2.filter2D(cam.color_image, -2, kernel)
+        cv2.imshow("Blured image and depth image", cam.usr_image())
+        lock, unripe_bolls, ripe_bolls, wall_mask = F.Harvest_Filter(cam.color_image)
+        
+        plt.pause(0.001)
+        print(lock, "\t", ripe_bolls, "\t", unripe_bolls)
     
     while(1): #Change to a for loop to prevent getting stuck
 
