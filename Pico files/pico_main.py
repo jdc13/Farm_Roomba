@@ -12,7 +12,7 @@ from Driving import Driving_control
 from Arm_control import Armcontrol
 
 # Creates a uart connection with Mom, that it will save to, and then respond back that it has been received
-mom = machine.UART(0, baudrate=9600, bits=8, parity=None, stop=1, tx=machine.Pin(12), rx=machine.Pin(1))
+mom = machine.UART(0, baudrate=9600, bits=8, parity=None, stop=1, tx=machine.Pin(0), rx=machine.Pin(1))
 Arm = Armcontrol()
 Drive = Driving_control()
 
@@ -80,13 +80,15 @@ def inside_left():
     # Temprarily to test my code. No need to keep once I confirm the code is complete.
     time.sleep(5)
     return True
+
+'''
 # Motors is the controls for the wall follow to use and send constant info. Another big thing for this
 # function that needs to be done is that the function needs to constantly read readings from uart. After
 # getting my code working for uart I believe theres a bit more of a action delay than I originally thought
 # so I may setup a quicker second uart connection for the numbers to read from. But this should be unnecessary
 # atm.
 # The math of this function needs its variables double checked. atm I havent done this personally.
-'''
+
 # for use with realsence
 def motors(velocity, direction):
     print("Driving motors!")
@@ -109,10 +111,9 @@ def motors(velocity, direction):
     # Temprarily to test my code. No need to keep once I confirm the code is complete.
     time.sleep(5)
     return True
-  '''  
+    
 # Splices string simply for the motors command to get three variables. The command drive,
 # the velocity, and direction.
-
 # This is also outdated and not used, but I kept it here for posterity reasons? idk
 def splice_string(string):
     if len(string) != 18:
@@ -125,6 +126,8 @@ def splice_string(string):
     return part1, part2, part3
 # Turn functions for the roomba to receive basic movement commands for the Adjust()
 # function
+'''
+
 def left(steps):
     Drive.turn(steps, dir = 'l')
     drive_commands.Stop()
