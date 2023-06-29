@@ -74,21 +74,22 @@ class Armcontrol:
         self.state = 0
 
     def harvest_time(self, ripe=[0, 0]):
+        # state machine for harvesting
         picking = 0
         while picking == 0:
-            if self.state == 0:
-                if ripe[0] == 0:
-                    self.pick_lower_bulb()
-                    self.state= 1
-                elif ripe[1] == 0:
-                    self.pick_upper_bulb()
-                    self.state = 3
+            if self.state == 0: # base state
+                if ripe[0] == 0: # if lower is ripe
+                    self.pick_lower_bulb() # pick lower
+                    self.state= 1 
+                elif ripe[1] == 0: # else if upper is ripe
+                    self.pick_upper_bulb() #pick upper
+                    self.state = 3 # go to end state
                 else:
-                    self.base_pose()
+                    self.base_pose() # else dont pick
                     self.state = 0
-                    picking = 1
+                    picking = 1 # and end while loop
 
-            elif self.state == 1:
+            elif self.state == 1: # at lower
                 if ripe[1] == 0:
                     self.intermediate_pose()
                     self.state = 2
@@ -97,12 +98,12 @@ class Armcontrol:
                     self.state = 0
                     picking = 1
             
-            elif self.state == 2:
+            elif self.state == 2:# at upper
                 if ripe[1] == 0:
                     self.pick_upper_bulb()
                     self.state = 3
 
-            elif self.state == 3:
+            elif self.state == 3: # return and end
                 self.base_pose()
                 self.state = 0
                 picking = 1
