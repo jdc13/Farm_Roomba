@@ -112,6 +112,8 @@ def motors(velocity, direction):
   '''  
 # Splices string simply for the motors command to get three variables. The command drive,
 # the velocity, and direction.
+
+# This is also outdated and not used, but I kept it here for posterity reasons? idk
 def splice_string(string):
     if len(string) != 18:
         return None
@@ -121,6 +123,31 @@ def splice_string(string):
     part3 = string[12:]
 
     return part1, part2, part3
+# Turn functions for the roomba to receive basic movement commands for the Adjust()
+# function
+def left(steps):
+    Drive.turn(steps, dir = 'l')
+    drive_commands.Stop()
+    
+    return True
+
+def right(steps):
+    Drive.turn(steps)
+    drive_commands.Stop()
+    
+    return True
+
+def forward(steps):
+    Drive.DriveStraight(steps)
+    drive_commands.Stop()
+    
+    return True
+    
+def back(steps)
+    Drive.DriveStraight(steps, dir = 'b')
+    drive_commands.Stop()
+    
+    return True
 
 # Main function here. This always runs and is looking for a new command from the pi which will be pretty
 # constant. Every time it receives a command it reports the valid command back and then ignores it's 
@@ -160,6 +187,17 @@ while True:             # Keeps it always running
             completed = harvest(0, 0)
         elif  message_str == "harvest11":		# Harvest Nothing
             completed = harvest(1, 1)
+            
+        # direction commands for the brand new Adjust() function
+        elif message_str[:4] == "left":
+            completed = left(int(message_str[4:]))
+        elif message_str[:5] == "right":
+            completed = right(int(message_str[5:]))
+        elif message_str[:7] == "forward":
+            completed = forward(int(message_str[7:]))
+        elif message_Str[:4] == "back":
+            completed = back(int(message_str[4:]))
+            
         elif message_str == "get_to_wall":		# Starts from corner and needs to get within real sense range of the first wall
             completed = get_to_wall()
         elif message_str == "outside_right":	# Is supposed to turn 180 degrees to the new row
