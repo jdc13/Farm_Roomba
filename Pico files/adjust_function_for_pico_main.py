@@ -120,7 +120,7 @@ while True:
     #drive_commands.DriveStraight(1100, dir="b")
     #drive_commands.DriveStraight(1100)
     #drive_commands.Left_corner()
-    dowel_steps = 1600
+    steps_full_rotation = 1600
     
     
     # Adjust() function
@@ -163,7 +163,9 @@ while True:
         # These commands are good to run the code in main of pico,
         # for the pi they will need to be changed to
         # send_command(cmd + steps), so for turn right it should be
-        # send_command(righttheta_turn) AS A STRING!
+        #
+        # message = "right" + str(theta_turn)
+        # send_command(message) 
         drive_commands.Turn(theta_turn, dir = 'l')
         drive_commands.DriveStraight(INCH*back_dist, dir = 'b')
         drive_commands.Turn(theta_man_turn, dir = 'r')
@@ -183,7 +185,9 @@ while True:
         # These commands are good to run the code in main of pico,
         # for the pi they will need to be changed to
         # send_command(cmd + steps), so for turn right it should be
-        # send_command(righttheta_turn) AS A STRING!
+        #
+        # message = "right" + str(theta_turn)
+        # send_command(message) 
         drive_commands.Turn(theta_turn, dir = 'r')
         drive_commands.DriveStraight(INCH*back_dist, dir = 'b')
         drive_commands.Turn(theta_man_turn, dir = 'l')
