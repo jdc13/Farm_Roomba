@@ -233,5 +233,8 @@ while True:             # Keeps it always running
             mom.write("bad send".encode())
         # send complete
     # Another delay, not sure it's necessary.
-    time.sleep(0.1)
+
+    # time.sleep is commented out, it will make print statements glitch but uart
+    # will run faster!
+    # time.sleep(0.1)
     # Reloops looking for a new command.
