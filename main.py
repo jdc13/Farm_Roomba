@@ -36,6 +36,10 @@ map = pd.DataFrame(np.zeros((3,9)),
 ripe = 0
 unripe = 1
 
+# Tuning: number of steps per unit
+INCH = 143.76 # steps per inch
+DEGREE = 14.4 # steps per degree
+
 #taken from mom_uart_commands
 def send_command(command):
     pico.write(command.encode())
@@ -54,7 +58,7 @@ def send_command(command):
         print("Pico Succesfully received and started my command!")
         completed = wait_for_completion(10, command) 
         if completed == "error":  
-            print("Pico had a error. brians sad.")
+            print("Pico had a error. brian is sad.")
             return False
         elif completed == "success":
             print("Success! Mom had 100% faith.")
@@ -103,7 +107,61 @@ def wait_for_completion(timeout_duration, command):
         return "error"
                 
 def adjust():
-    pass
+    #constants needs for the function
+    theta_man = 30	# Roomba will always turn at a 30 degree angle for calculation purposes
+    # X is measured distance of roomba to the wall.
+    x_des = 5  # this is the desired distance from the wall, probably in inches
+    x_max = 0.25
+    x_min = 0.25
+    # Measured angle in parralell to the wall. positive leans left,
+    # negative will lean right in parallel to the wall
+    theta_max = 1
+    theta_min = -1
+    # Measured dist to the next boll if it be off.
+    y_min = -0.25
+    y_max = 0.25
+
+    # Start by measuring position relative to wall
+    x_meas, y_meas, theta_meas = location.state() #TODO: Need to actually implement location.state!!!
+    
+    # If distance is greater than desired
+    if x_meas > x_des + x_max:
+        # calculate stuff
+        delta_x = x_meas - x_des
+        forward_dist = INCH * delta_x / math.tan(math.radians(theta_man))       
+        back_dist = forward_dist / math.cos(math.radians(theta_man))
+        theta_turn = DEGREE * (theta_man - theta_meas)
+        theta_man_turn = DEGREE * theta_man 
+        send_command("left" + str(theta_turn))
+        send_command("back" + str(back_dist))
+        send_command("right" + str(theta_man_turn))
+        send_command("forward" + str(forward_dist))
+
+    #If the distance is less than desired        
+    elif x_meas < x_des - x_min:
+        # calculate stuff
+        delta_x = x_meas - x_des
+        forward_dist = -INCH * delta_x / math.tan(math.radians(theta_man))
+        back_dist = forward_dist / math.cos(math.radians(theta_man)) 
+        theta_turn = DEGREE * (theta_man + theta_meas)
+        theta_man_turn = DEGREE * theta_man
+        
+        send_command("right" + str(theta_turn))
+        send_command("back" + str(back_dist))
+        send_command("left" + str(theta_man))
+        send_command("forward" + str(forward_dist))
+        
+    # Will update the angle if roomba is more than a degree off either way.
+    elif theta_meas < theta_min:
+        send_command("left" + str(-DEGREE*theta_meas))
+    elif theta_meas > theta_max:
+        send_command("right" + str(DEGREE*theta_meas))
+
+    #Updates Y distance after
+    if y_meas > y_max:
+        send_command("back" + str(INCH*y_meas))
+    elif y_meas < y_min:
+        send_command("forward" + str(-INCH*y_meas)
 
 def identify():
     #Colorsensing
@@ -131,7 +189,7 @@ def harvest_cotton(ripeness):
     
 state = 'init'
 bollCounter = 1
-rowCounter = 1
+rowCounter = 0
 
 while(1==1):
     match state:
@@ -144,12 +202,15 @@ while(1==1):
             state ='harvest'
 
         case 'harvest':
-            while bulbCounter < 9:
+            while bollCounter < 9:
                 adjust()
                 ripeness = identify() #Colorsensing of each bulb
                 mapping(ripeness, bulbCounter)  #map and store data
+                send_command("forward" + str(1234)) #TODO: tune this number: Distance in steps between camera and robot arm
                 harvest_cotton(ripeness)
-                bulbCounter = bulbCounter + 1 
+                if boll_counter < 9:
+                    send_command("back" + str(123)) #TODO: Tune this number! Distance of overshoot toget camera aligned with next boll
+                bollCounter = bollCounter + 1 
 
             rowCounter = rowCounter + 1
             if rowCounter == 1 or 3 or 5:
@@ -160,12 +221,12 @@ while(1==1):
                 state = 'go_home'
 
         case 'outisde_right':
-            send_command("outside_right")
+            send_command("outside_right") # TODO Update forward distances based on how far we move in adjust()
             bulbCounter = 1
             state = 'harvest'
 
         case 'inside_left':
-            send_command("inside_left")
+            send_command("inside_left") # TODO Update forward distances based on how far we move in adjust()
             bulbCounter = 1
             state = 'harvest'
 
