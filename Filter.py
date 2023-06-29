@@ -2,7 +2,8 @@ import numpy as np
 import cv2
 from scipy import ndimage
 
-# HSV Filter codes
+
+# HSV Filter codes: Tune as necessary
 wall_high = np.array([70, 255, 120]) # Some areas of the wall are masked, but there is enough visible to get a good reading.
 wall_low = np.array([0, 0, 0])
 
@@ -11,6 +12,10 @@ ripe_low = np.array([32, 0, 200])
 
 unripe_high = np.array([118, 255, 255]) #This one is super easy for the filter to see.
 unripe_low = np.array([57, 101, 0])
+
+# distance measurement conversion
+pixels_per_inch = 60 #TODO: Tune this value basesd on how far we are from the wall
+pixels_center = 150
 
 
 def find_bolls(mask, tolerance):
@@ -31,13 +36,10 @@ def find_bolls(mask, tolerance):
     
     return bolls
 
-
-
-
 def Harvest_Filter(color_image):
     '''
     This function returns:
-    The horizontal position of the bolls "lock" for correction
+    The horizontal position of the bolls "boll_loc" for correction
     The number and position of the bolls. 
     Represented as binary numbers. 1 = bottom, 10 = top. 
     Can return 0, 1, 2, 3 representing none, bottom only , top only, both respectively.
@@ -48,10 +50,8 @@ def Harvest_Filter(color_image):
         # src	input image: 8-bit unsigned, 16-bit unsigned ( CV_16UC... ), or single-precision floating-point.
         # dst	output image of the same size and depth as src.
         
-    ripe_mask = cv2.inRange(HSV, ripe_low,ripe_high)
-    wall_mask = cv2.inRange(HSV, wall_low,wall_high)
-    unripe_mask = cv2.inRange(HSV,unripe_low,unripe_high)
-
+    ripe_mask = cv2.inRange(HSV, ripe_low, ripe_high)
+    unripe_mask = cv2.inRange(HSV,unripe_low, unripe_high)
         # src	first input array.
         # lowerb	inclusive lower boundary array or a scalar.
         # upperb	inclusive upper boundary array or a scalar.
@@ -66,10 +66,15 @@ def Harvest_Filter(color_image):
 
     # Find the location of the ripe bolls
     # combined_mask = np.logical_or(ripe_mask, unripe_mask) #Combine the two masks to look at the ripe and unripe bolls at the same time
-    boll_loc, _ = ndimage.center_of_mass(combined_mask) # finds location of the center of the boll x(lock) i 0 to ~300(left to right);
+    boll_loc, _ = ndimage.center_of_mass(combined_mask) # finds pixel location of the center of the boll x(boll_loc) i 0 to ~300(left to right);
 
+    boll_loc = (boll_loc - pixels_center) * pixels_per_inch # in inches: negative if boll is on left side, positive for right
+    return boll_loc, ripe_bolls, unripe_bolls
 
-    return boll_loc, unripe_bolls, ripe_bolls, wall_mask
+def Wall_Filter(color_image):
+    HSV = cv2.cvtColor(color_image, cv2.COLOR_BGR2HSV)
+    wall_mask = cv2.inRange(HSV, wall_low, wall_high)
+    return wall_mask
     
 
 

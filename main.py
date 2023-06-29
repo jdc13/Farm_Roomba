@@ -7,9 +7,9 @@ import scipy.stats as stat
 import time
 import serial
 
-import wallFollow_class as WF
-import Hardware.RealSense as RS
-import Hardware.Filter as Filter
+import RealSense as RS
+import Filter
+import measurements
 
 # Initializes pins for uart coms to be used, 9600 baud rate
 pico = serial.Serial('/dev/serial0', 9600, timeout = 1)
@@ -23,10 +23,6 @@ class states:
     inside_left = 4       #Move out of the run and do a 180 degree turn and move back in
     go_home = 5          #Move from the end of the last row to the final location. Store the map to a file
 
-#hardware
-cam = RS.RSCam(Range= "Short")
-cam.get_frames() #Reject first frame (it's really dark.)
-
 #initialize a dataframe of 0s the size of the map
 #6 rows, 9 plants, only 3 rows are relevant
 map = pd.DataFrame(np.zeros((3,9)), 
@@ -35,6 +31,7 @@ map = pd.DataFrame(np.zeros((3,9)),
 
 ripe = 0
 unripe = 1
+empty = 2
 
 # Tuning: number of steps per unit
 INCH = 143.76 # steps per inch
@@ -122,7 +119,7 @@ def adjust():
     y_max = 0.25
 
     # Start by measuring position relative to wall
-    x_meas, y_meas, theta_meas = location.state() #TODO: Need to actually implement location.state!!!
+    x_meas, theta_meas = measurements.measure_x_theta()
     
     # If distance is greater than desired
     if x_meas > x_des + x_max:
@@ -157,6 +154,7 @@ def adjust():
     elif theta_meas > theta_max:
         send_command("right" + str(DEGREE*theta_meas))
 
+    y_meas = measurements.measure_y(cam)
     #Updates Y distance after
     if y_meas > y_max:
         send_command("back" + str(INCH*y_meas))
@@ -164,18 +162,50 @@ def adjust():
         send_command("forward" + str(-INCH*y_meas)
 
 def identify():
-    #Colorsensing
-    Lower_bulb= ripe
-    Upper_bulb= ripe
-    return [Lower_bulb, Upper_bulb]
+    # Color Sensing
+    ripe_bolls, unripe_bolls = measurements.measure_ripe()
 
-def mapping(ripe, bulbCount):
+    # Map Identification
+    empty = 0
+    if ripe_bolls < 10:
+        upper_boll = ripe
+    elif unripe_bolls < 10:
+        upper_boll = unripe
+    else: 
+        upper_boll = empty
+    if ripe_bolls % 10 < 1:
+        lower_boll = ripe
+    elif unripe_bolls % 10 < 1:
+        lower_boll = unripe
+    else: 
+        lower_boll = empty
+    ripeness_map = [lower_boll, upper_boll]
+
+    # Harvest Identification
+    empty = 2
+    if ripe_bolls < 10:
+        upper_boll = ripe
+    elif unripe_bolls < 10:
+        upper_boll = unripe
+    else: 
+        upper_boll = empty
+    if ripe_bolls % 10 < 1:
+        lower_boll = ripe
+    elif unripe_bolls % 10 < 1:
+        lower_boll = unripe
+    else: 
+        lower_boll = empty
+    ripeness_harvest = [lower_boll, upper_boll]
+
+    return ripeness_map, ripeness_harvest
+
+def mapping(ripeness, bollCount):
     if rowCounter == 2:
-        map.at[2,'P{}'.format(bulbCount)] = ripe[0] + ripe[1]
+        map.at[2,'P{}'.format(bollCount)] = ripeness[0] + ripeness[1]
     elif rowCounter == 4:
-        map.at[4,'P{}'.format(bulbCount)] = ripe[0] + ripe[1]
+        map.at[4,'P{}'.format(bollCount)] = ripeness[0] + ripeness[1]
     elif rowCounter == 6:
-        map.at[6,'P{}'.format(bulbCount)] = ripe[0] + ripe[1]
+        map.at[6,'P{}'.format(bollCount)] = ripeness[0] + ripeness[1]
 
 def harvest_cotton(ripeness):
     if ripeness[0] == ripe and ripeness[1] == ripe:
@@ -204,12 +234,13 @@ while(1==1):
         case 'harvest':
             while bollCounter < 9:
                 adjust()
-                ripeness = identify() #Colorsensing of each bulb
-                mapping(ripeness, bulbCounter)  #map and store data
-                send_command("forward" + str(1234)) #TODO: tune this number: Distance in steps between camera and robot arm
-                harvest_cotton(ripeness)
+                ripeness_map, ripeness_harvest = identify() # Color Sensing of each bulb
+                mapping(ripeness_map, bulbCounter)  # Map and store data
+                send_command("forward" + str(INCH * 6.5))  #TODO: tune this number: Distance in steps between camera and robot arm
+                ripeness
+                harvest_cotton(ripeness_harvest)
                 if boll_counter < 9:
-                    send_command("back" + str(123)) #TODO: Tune this number! Distance of overshoot toget camera aligned with next boll
+                    send_command("back" + str(123)) #TODO: Tune this number! Distance of overshoot to get camera aligned with next boll
                 bollCounter = bollCounter + 1 
 
             rowCounter = rowCounter + 1
@@ -220,14 +251,14 @@ while(1==1):
             elif rowCounter == 6:
                 state = 'go_home'
 
-        case 'outisde_right':
+        case 'outside_right':
             send_command("outside_right") # TODO Update forward distances based on how far we move in adjust()
-            bulbCounter = 1
+            bollCounter = 1
             state = 'harvest'
 
         case 'inside_left':
             send_command("inside_left") # TODO Update forward distances based on how far we move in adjust()
-            bulbCounter = 1
+            bollCounter = 1
             state = 'harvest'
 
         case'go_home':
