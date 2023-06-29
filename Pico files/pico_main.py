@@ -207,20 +207,6 @@ while True:             # Keeps it always running
         elif message_str == "go_home":			# Is supposed to bring the robot to the final corner
             completed = go_home()
             # elif message_str == "go_forward":		# Will move robot to next possible boll location
-  
-        
-        # This motors command is the toughest because it needs to splice the command from integers sent. Me and carter
-        # decided 6 ints were more than necessary for motors velocity and direction, so we splice it into three sets of
-        # 6 integers here.
-        if completed == False:
-            result = splice_string(message_str)
-            if result is not None:
-                drive, velocity, direction = result
-                if drive == "motors":
-                    completed = motors(int(velocity), int(direction))
-            else:
-                print("The string length is not 18 characters.")
-                
             
         
         # If no commands are recognized... bad send
