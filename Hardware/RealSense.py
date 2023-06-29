@@ -38,7 +38,8 @@
 #To get it working on raspbery pi, see:
     # https://dev.intelrealsense.com/docs/using-depth-camera-with-raspberry-pi-3
     # https://www.reddit.com/r/realsense/comments/hn0hfe/anyone_about_to_install_pyrealsense2_on_raspbian/
-    
+    # https://intelrealsense.github.io/librealsense/python_docs/_generated/pyrealsense2.html
+
 #Compatibility fix for raspberry pi
 try:
     #This block will run on a PC
@@ -74,12 +75,14 @@ class RSCam:
         #Set up RS objects
         self.pc = rs.pointcloud()
         self.pipeline = rs.pipeline()
+            # camera settings and computer vision modules
         self.config = rs.config()
+            # allows you to set filters in pipeline
 
         # Get device product line for setting a supporting resolution
-        pipeline_wrapper = rs.pipeline_wrapper(self.pipeline)
-        pipeline_profile = self.config.resolve(pipeline_wrapper)
-        device = pipeline_profile.get_device()
+        pipeline_wrapper = rs.pipeline_wrapper(self.pipeline) # prep for next step
+        pipeline_profile = self.config.resolve(pipeline_wrapper) # compiles device requirments and finds sutable device
+        device = pipeline_profile.get_device() # returns the device found
         
         # Set the detection range of the camera
         if Range == "Long":
