@@ -4,10 +4,10 @@ from time import sleep
 class Driving_control:
     def __init__(self):
 
-        self.leftPWM = PWM(Pin(15))
-        self.rightPWM = PWM(Pin(19))
-        self.leftDir = Pin(14, Pin.OUT)
-        self.rightDir = Pin(18, Pin.OUT)
+        self.leftPWM = PWM(Pin(9))
+        self.rightPWM = PWM(Pin(5))
+        self.leftDir = Pin(8, Pin.OUT)
+        self.rightDir = Pin(4, Pin.OUT)
 
         self.baseSpeed = 300
 
