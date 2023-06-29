@@ -23,8 +23,8 @@ class Driving_control:
         self.rightDir.value(0)
         
         self.steps = 0
-        self.Int_Pin= Pin(22, Pin.IN, Pin.PULL_DOWN)
-        self.Int_Pin.irq(trigger= Pin.IRQ_FALLING, handler= self.Step_Counter)
+        self.Int_Pin= Pin(22, Pin.IN, Pin.PULL_DOWN) # creat a pin object
+        self.Int_Pin.irq(trigger= Pin.IRQ_FALLING, handler= self.Step_Counter) #interupt triggers on falling edge and calls Step_Counter
 
     def Step_Counter(self, pin):
         self.Int_Pin.irq(handler=None)
