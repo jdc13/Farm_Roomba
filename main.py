@@ -125,8 +125,8 @@ def adjust():
     if x_meas > x_des + x_max:
         # calculate stuff
         delta_x = x_meas - x_des
-        forward_dist = INCH * delta_x / math.tan(math.radians(theta_man))       
-        back_dist = forward_dist / math.cos(math.radians(theta_man))
+        forward_dist = INCH * delta_x / np.tan(np.radians(theta_man))       
+        back_dist = forward_dist / np.cos(np.radians(theta_man))
         theta_turn = DEGREE * (theta_man - theta_meas)
         theta_man_turn = DEGREE * theta_man 
         send_command("left" + str(theta_turn))
@@ -138,8 +138,8 @@ def adjust():
     elif x_meas < x_des - x_min:
         # calculate stuff
         delta_x = x_meas - x_des
-        forward_dist = -INCH * delta_x / math.tan(math.radians(theta_man))
-        back_dist = forward_dist / math.cos(math.radians(theta_man)) 
+        forward_dist = -INCH * delta_x / np.tan(np.radians(theta_man))
+        back_dist = forward_dist / np.cos(np.radians(theta_man)) 
         theta_turn = DEGREE * (theta_man + theta_meas)
         theta_man_turn = DEGREE * theta_man
         
@@ -154,7 +154,7 @@ def adjust():
     elif theta_meas > theta_max:
         send_command("right" + str(DEGREE*theta_meas))
 
-    y_meas = measurements.measure_y(cam)
+    y_meas = measurements.measure_y()
     #Updates Y distance after
     if y_meas > y_max:
         send_command("back" + str(INCH*y_meas))
