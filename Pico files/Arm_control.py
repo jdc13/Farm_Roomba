@@ -28,37 +28,41 @@ class Armcontrol:
         # J#-UH is the upper harvesting position
         #----------------------------------------
 
-        #------------Joint 1 Angles--------------
+       #------------Joint 1 Angles--------------
         
         # .06 is the small angle possible
+        #bigger is ccw
 
-        self.j1_0 = .23
-        self.j1_L = .25
-        self.j1_LH = .26
-        self.j1_I = .21
-        self.j1_U = .24
-        self.j1_UH = .26
+        self.j1_0 = .14
+        self.j1_L = .22
+        self.j1_LH = .23
+        self.j1_I = .18
+        self.j1_U = .23
+        self.j1_UH = .24
+    
 
         #------------Joint 2 Angles--------------
+        #bigger is ccw
 
         self.j2_0 = .226
-        self.j2_L = .17
-        self.j2_LH = .15
-        self.j2_I = .19
-        self.j2_U = .1
-        self.j2_UH = .08
+        self.j2_L = .165
+        self.j2_LH = .155
+        self.j2_I = .17
+        self.j2_U = .11
+        self.j2_UH = .1
 
         #------------Joint 3 Angles--------------
         
         # .08 is the small angle before hitting the bracket
         # .31 is the largest angle before hitting the arm
+        #bigger is cw
 
-        self.j3_0 = .31
-        self.j3_L = .19
-        self.j3_LH = .17
-        self.j3_I = .2
+        self.j3_0 = .128
+        self.j3_L = .16
+        self.j3_LH = .16
+        self.j3_I = .16
         self.j3_U = .11
-        self.j3_UH = .12
+        self.j3_UH = .115
         
         
         #Write the motors to the start position and set the current angle 
