@@ -23,7 +23,7 @@ cam.get_frames() #Reject 1st frame
 
 # This try function is because the realsense camera was feeding bad data, to the point it was causing crashes. 
 theta = 90
-while(abs(theta) > 8):
+while(abs(theta) > 5):
     cam.get_frames()#update camera data
     # print("Have new frame")
     #Blur then sharpen the image to get a better filter result
@@ -34,12 +34,13 @@ while(abs(theta) > 8):
     cam.color_image = cv2.filter2D(cam.color_image, -2, kernel)
     
     # Will generate a mask that filters things out later.
-    boll_loc, unripe_bolls, ripe_bolls = F.Harvest_Filter(cam.color_image)
+    boll_loc, ripe_bolls, unripe_bolls = F.Harvest_Filter(cam.color_image)
     wall_mask = F.Wall_Filter(cam.color_image)
     HSV = cv2.cvtColor(cam.color_image, cv2.COLOR_BGR2HSV)
     ripe_mask = cv2.inRange(HSV, F.ripe_low, F.ripe_high)
+    ripe_mask = ripe_mask[:,42:383]
     unripe_mask = cv2.inRange(HSV,F.unripe_low, F.unripe_high)
-    combined_mask = cv2.add(ripe_mask, unripe_mask)
+    #combined_mask = cv2.add(ripe_mask, unripe_mask)
     # depthMask = cv2.inRange(cam.depth_image,0,1) #This mask filters out the bad data
 
     # Generate the point cloud:
@@ -55,18 +56,22 @@ while(abs(theta) > 8):
     slope, intercept, r, p, se = stat.linregress(X, Z)
     r2 = r**2
     # print("R Squared: ", r2)
+
+    # print(slope)
+    #Find the angle and run the controller.
+    x = intercept * 39.3700787
     theta = np.degrees(np.arctan(slope))
     print("Theta: ", theta)
-    # print(intercept)
 
-### Visualization code:
+print("x: ", x)
 print(boll_loc, "\t", ripe_bolls, "\t", unripe_bolls)
 cv2.imshow("Blurred image and depth image", cam.usr_image())
 cv2.imshow("wall_mask", wall_mask)
 cv2.imshow("ripe_mask", ripe_mask)
 cv2.imshow("unripe_mask", unripe_mask)
-cv2.imshow("combined_mask", combined_mask)
+#cv2.imshow("combined_mask", combined_mask)
 
+#Visualization code:
 fig = plt.figure(1)
 length = np.arange(-.3,.4,.1)
 wall = slope*length + intercept
