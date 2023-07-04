@@ -1,6 +1,10 @@
 from machine import Pin, PWM
 from time import sleep
 
+# Tuning: number of steps per unit
+INCH = 143.76 # steps per inch
+DEGREE = 14.4 # steps per degree
+
 class Driving_control:
     def __init__(self):
 
@@ -11,8 +15,8 @@ class Driving_control:
 
         self.baseSpeed = 300
 
-        self.deg_90 = 1285
-        
+        self.deg_90 = 1285 #TODO: tune this
+
         self.delay = .5
 
         self.leftPWM.freq(200)
@@ -86,6 +90,7 @@ class Driving_control:
     def Find_wall(self):
         self.Arc(1700)
         self.Turn(angle= 550, dir='l')
+        self.DriveStraight(INCH * 11.75)
         
     def Find_corner(self):
         self.Arc(1980, dir = 'l')
@@ -93,16 +98,18 @@ class Driving_control:
         self.DriveStraight(800)
         
     def Right_corner(self):
-        self.DriveStraight(1600)
+        self.DriveStraight(INCH * 11.75) # was 1600
         self.Turn(self.deg_90, dir ='r')
-        self.DriveStraight(3600)
+        self.DriveStraight(INCH * 15.75) # was 3600
         self.Turn(self.deg_90, dir ='r')
-        self.DriveStraight(1600)
+        self.DriveStraight(INCH * 11.75) # was 1600
         
     def Left_corner(self):
-        self.DriveStraight(1600)
-        self.Turn(self.deg_90*2, dir ='l')
-        self.DriveStraight(1600)
+        self.DriveStraight(INCH * 6)
+        self.Turn(self.deg_90, dir ='r')
+        self.DriveStraight(INCH * 3.5)
+        self.Turn(self.deg_90, dir ='r')
+        self.DriveStraight(INCH * 1.5)
         
 while True:
     drive_commands= Driving_control()

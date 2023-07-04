@@ -55,7 +55,7 @@ def send_command(command):
         print("Pico Succesfully received and started my command!")
         completed = wait_for_completion(10, command) 
         if completed == "error":  
-            print("Pico had a error. brian is sad.")
+            print("Pico had an error. brian is sad.")
             return False
         elif completed == "success":
             print("Success! Mom had 100% faith.")
@@ -107,10 +107,10 @@ def adjust():
     #constants needs for the function
     theta_man = 30	# Roomba will always turn at a 30 degree angle for calculation purposes
     # X is measured distance of roomba to the wall.
-    x_des = 5  # this is the desired distance from the wall, probably in inches
+    x_des = .187325  # desired distance from the wall, in meters; 0.187325 equivalent to 7.5 inches from base to wall
     x_max = 0.25
     x_min = 0.25
-    # Measured angle in parralell to the wall. positive leans left,
+    # Measured angle in parallel to the wall. positive leans left,
     # negative will lean right in parallel to the wall
     theta_max = 1
     theta_min = -1
@@ -159,14 +159,14 @@ def adjust():
     if y_meas > y_max:
         send_command("back" + str(INCH*y_meas))
     elif y_meas < y_min:
-        send_command("forward" + str(-INCH*y_meas)
+        send_command("forward" + str(-INCH*y_meas))
 
 def identify():
     # Color Sensing
     ripe_bolls, unripe_bolls = measurements.measure_ripe()
 
     # Map Identification
-    empty = 0
+    empty = 0 # for mapping, we only care about unripe bolls, so "empty" has the same value as "ripe"
     if ripe_bolls < 10:
         upper_boll = ripe
     elif unripe_bolls < 10:
@@ -182,7 +182,7 @@ def identify():
     ripeness_map = [lower_boll, upper_boll]
 
     # Harvest Identification
-    empty = 2
+    empty = 2 # for harvesting, ripe and empty are different
     if ripe_bolls < 10:
         upper_boll = ripe
     elif unripe_bolls < 10:
@@ -217,17 +217,17 @@ def harvest_cotton(ripeness):
     elif ripeness[0] == unripe and ripeness[1] == unripe:
         send_command("harvest11") #Harvest Nothing
     
-state = 'init'
+state = 'adjust'#'init'
 bollCounter = 1
 rowCounter = 0
 
-while(1==1):
+while True:
     match state:
         case 'init':
             #wait for button press
             state = 'get_to wall'
 
-        case 'find_wall':
+        case 'get_to_wall':
             send_command("get_to_wall")
             state ='harvest'
 
@@ -236,11 +236,10 @@ while(1==1):
                 adjust()
                 ripeness_map, ripeness_harvest = identify() # Color Sensing of each bulb
                 mapping(ripeness_map, bulbCounter)  # Map and store data
-                send_command("forward" + str(INCH * 6.5))  #TODO: tune this number: Distance in steps between camera and robot arm
-                ripeness
-                harvest_cotton(ripeness_harvest)
+                send_command("forward" + str(INCH * 8.25))  #TODO: tune this number: Distance in steps between color camera and robot arm
+                #harvest_cotton(ripeness_harvest)
                 if boll_counter < 9:
-                    send_command("back" + str(123)) #TODO: Tune this number! Distance of overshoot to get camera aligned with next boll
+                    send_command("back" + str(INCH * 3.25)) #TODO: Tune this number! Distance of overshoot to get camera aligned with next boll
                 bollCounter = bollCounter + 1 
 
             rowCounter = rowCounter + 1
@@ -262,6 +261,6 @@ while(1==1):
             state = 'harvest'
 
         case'go_home':
-            send_command("go_home")
+            # send_command("go_home")
             # export CSV file in the prescribed format:
             #map.to_csv("/Users/carsontownsend/Desktop/FarmRoomba.csv", index_label="Row:", encoding="utf-8") #Path will need to be changed

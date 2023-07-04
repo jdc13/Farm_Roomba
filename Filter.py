@@ -14,8 +14,8 @@ unripe_high = np.array([118, 255, 255]) #This one is super easy for the filter t
 unripe_low = np.array([57, 101, 0])
 
 # distance measurement conversion
-pixels_per_inch = 60 #TODO: Tune this value basesd on how far we are from the wall
-pixels_center = 150
+pixels_per_inch = 77.1 # Image is 424 pixels across. At 7.5 in from wall, camera sees approx. 10 inches of wall and *5.5* inches at level of bolls. 424/5.5 = 77.1
+pixels_center = 212
 
 
 def find_bolls(mask, tolerance):
@@ -61,14 +61,14 @@ def Harvest_Filter(color_image):
     combined_mask = cv2.add(ripe_mask, unripe_mask) #Combine the two masks to look at the ripe and unripe bolls at the same time
 
     #finds boll location in next 2 lines
-    ripe_bolls = find_bolls(ripe_mask, 100) #This tolerance needs to be found expirimentally 
-    unripe_bolls = find_bolls(unripe_mask, 100) #Tolerance needs to be found exipirimentally
+    ripe_bolls = find_bolls(ripe_mask, 50) #This tolerance needs to be found expirimentally 
+    unripe_bolls = find_bolls(unripe_mask, 50) #Tolerance needs to be found exipirimentally
 
     # Find the location of the ripe bolls
     # combined_mask = np.logical_or(ripe_mask, unripe_mask) #Combine the two masks to look at the ripe and unripe bolls at the same time
-    boll_loc, _ = ndimage.center_of_mass(combined_mask) # finds pixel location of the center of the boll x(boll_loc) i 0 to ~300(left to right);
+    boll_loc, _ = ndimage.center_of_mass(ripe_mask) # finds pixel location of the center of the boll x(boll_loc) i 0 to ~300(left to right);
 
-    boll_loc = (boll_loc - pixels_center) * pixels_per_inch # in inches: negative if boll is on left side, positive for right
+    boll_loc = (boll_loc - pixels_center) / pixels_per_inch # in inches: negative if boll is on left side, positive for right
     return boll_loc, ripe_bolls, unripe_bolls
 
 def Wall_Filter(color_image):
