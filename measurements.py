@@ -14,7 +14,7 @@ cam = RS.RSCam(Range= "Short")
 cam.get_frames() #Reject first frame (it's really dark.)
 
 #  Initialize variables that we will need later.
-def measure_x_theta()
+def measure_x_theta():
 
     # This try function is because the realsense camera was feeding bad data, to the point it was causing crashes.
     # We should still be able to read the locations of the bolls from the camera.  
@@ -52,8 +52,6 @@ def measure_x_theta()
         return x, theta
     except:
         print("bad data")
-    finally:
-        break
 
 def measure_y():
     cam.get_frames() # update camera data
@@ -65,7 +63,7 @@ def measure_y():
     y_meas, _, _ = F.Harvest_Filter(cam.color_image)
     return y_meas
 
-def measure_ripe()
+def measure_ripe():
     cam.get_frames()#update camera data
     #print("Have new frame")
     cam.color_image =  cv2.blur(cam.color_image,[10,10])  #Blur then sharpen the image to get a better filter result
