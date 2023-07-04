@@ -260,7 +260,7 @@ while True:
             bollCounter = 1
             state = 'harvest'
 
-        case'go_home':
+        case 'go_home':
             pass
             # send_command("go_home")
             # export CSV file in the prescribed format:
