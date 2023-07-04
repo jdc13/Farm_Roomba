@@ -217,7 +217,7 @@ def harvest_cotton(ripeness):
     elif ripeness[0] == unripe and ripeness[1] == unripe:
         send_command("harvest11") #Harvest Nothing
     
-state = 'adjust'#'init'
+state = 'harvest'#'init'
 bollCounter = 1
 rowCounter = 0
 
@@ -261,6 +261,7 @@ while True:
             state = 'harvest'
 
         case'go_home':
+            pass
             # send_command("go_home")
             # export CSV file in the prescribed format:
             #map.to_csv("/Users/carsontownsend/Desktop/FarmRoomba.csv", index_label="Row:", encoding="utf-8") #Path will need to be changed
