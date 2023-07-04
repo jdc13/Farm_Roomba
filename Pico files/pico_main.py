@@ -164,9 +164,13 @@ while True:             # Keeps it always running
         message = b""
         while True:
             data = mom.read(1)
-            if not data or data == b'\n':
+            if data:
+                message += data
+            else: 
                 break
-            message += data
+            if data == b'\n':
+                break
+            time.sleep(0.001)
         message_str = message.decode('utf-8').strip()   # message_str stays unaltered to reuse in coms back to mom.
         
         # Small delay is to ensure mom has time to listen after sending. However this may be obsolete, I will check tomorrow.
