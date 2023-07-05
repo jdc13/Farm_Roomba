@@ -8,9 +8,9 @@ class Armcontrol:
         self.speed =.001  #Tuning parameter for motion control
         self.delay =.004   #Tuning parameter for motion control
         self.delay_harvesting = 2  #delay for harvesting
-        self.joint1 = PWM(Pin(19)) # Attach PWM object on a GPIO 19
-        self.joint2 = PWM(Pin(20))
-        self.joint3 = PWM(Pin(21))
+        self.joint1 = PWM(Pin(18)) # Attach PWM object on a GPIO 19
+        self.joint2 = PWM(Pin(17))
+        self.joint3 = PWM(Pin(16))
         self.joint1.freq(frequency)
         self.joint2.freq(frequency)
         self.joint3.freq(frequency)
