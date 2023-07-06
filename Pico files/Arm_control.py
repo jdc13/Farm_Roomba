@@ -14,6 +14,8 @@ class Armcontrol:
         self.joint1.freq(frequency)
         self.joint2.freq(frequency)
         self.joint3.freq(frequency)
+        self.vacuum = Pin(11, Pin.OUT)
+        self.motor = Pin(12, Pin.OUT)
 
         #------------Angles Guide----------------
         # Servo motors are 270 degree servos
