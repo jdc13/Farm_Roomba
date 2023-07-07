@@ -23,21 +23,21 @@ def harvest(high, low):
         print("Harvesting High and Low")
         Arm.harvest_time([0,0])
         
-        time.sleep(5)
+        #time.sleep(5)
         print("done")
         
     elif high == 1:
         print("Harvesting High")
         Arm.harvest_time([1,0])
 
-        time.sleep(5)
+        #time.sleep(5)
         print("done")
          
     elif low == 1:
         print("Harvesting Low")
         Arm.harvest_time([0,1])
         
-        time.sleep(5)
+        #time.sleep(5)
         print("done")
         
     # Temprarily to test my code. No need to keep once I confirm the code is complete.
@@ -84,7 +84,7 @@ def forward(steps):
     drive_commands.Stop()
     return True
     
-def back(steps)
+def back(steps):
     Drive.DriveStraight(steps, dir = 'b')
     drive_commands.Stop()
     return True
