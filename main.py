@@ -114,7 +114,7 @@ def adjust():
     #constants needs for the function
     theta_man = 30	# Roomba will always turn at a 30 degree angle for calculation purposes
     # X is measured distance of roomba to the wall.
-    x_des = .187325  # desired distance from the wall, in meters; 0.187325 equivalent to 7.5 inches from base to wall
+    x_des = 7.5  # desired distance from the wall, in inches
     x_max = 0.25
     x_min = 0.25
     # Measured angle in parallel to the wall. positive leans left,
