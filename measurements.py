@@ -43,12 +43,12 @@ def measure_x_theta():
             X = np.transpose(pc[:,0]) #first column of the point cloud
             Z = np.transpose(pc[:,2]) #third column of the point cloud
             slope, intercept, r, p, se = stat.linregress(X, Z) 
-            x = intercept # in meters
-            theta = np.arctan(slope) # in radians
-            r2 = r**2
-            # print(intercept)
-            print(theta)
+            x = intercept * 39.3700787 # converting meters to inches
+            theta = np.degrees(np.arctan(slope))
+            # r2 = r**2
             
+        print("x_meas: ", intercept)
+        print("theta_meas: ", theta)
         return x, theta
     except:
         print("bad data")
@@ -72,6 +72,9 @@ def measure_ripe():
                         [-1,-1,-1]])
     cam.color_image = cv2.filter2D(cam.color_image, -2, kernel)
     _, ripe_bolls, unripe_bolls = F.Harvest_Filter(cam.color_image)
+
+
+
 
 '''
 #Visualization code:
