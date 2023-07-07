@@ -88,6 +88,7 @@ class Armcontrol:
                     self.pick_lower_bulb() # pick lower
                     self.state= 1 
                 elif ripe[1] == 0: # else if upper is ripe
+                    self.intermediate_pose() #move to intermediate first
                     self.pick_upper_bulb() #pick upper
                     self.state = 3 # go to end state
                 else:
