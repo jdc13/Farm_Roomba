@@ -129,6 +129,7 @@ def adjust():
         back_dist = forward_dist / np.cos(np.radians(theta_man))
         theta_turn = DEGREE * (theta_man - theta_meas)
         theta_man_turn = DEGREE * theta_man 
+        
         send_command("left" + str(theta_turn))
         send_command("back" + str(back_dist))
         send_command("right" + str(theta_man_turn))
@@ -145,7 +146,7 @@ def adjust():
         
         send_command("right" + str(theta_turn))
         send_command("back" + str(back_dist))
-        send_command("left" + str(theta_man))
+        send_command("left" + str(theta_man_turn))
         send_command("forward" + str(forward_dist))
         
     # Will update the angle if roomba is more than a degree off either way.
