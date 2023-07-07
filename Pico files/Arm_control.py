@@ -122,7 +122,11 @@ class Armcontrol:
             self.move(self.j1_L, self.j2_L, self.j3_L)
             utime.sleep(.5)
             self.move(self.j1_LH, self.j2_LH, self.j3_LH)
+            self.motor.value(1)
+            self.vacuum.value(1)
             utime.sleep(self.delay_harvesting)
+            self.motor.value(0)
+            self.vacuum.value(0)
             picking = 1
             
     def pick_upper_bulb(self):
@@ -131,7 +135,11 @@ class Armcontrol:
             self.move(self.j1_U, self.j2_U, self.j3_U)
             utime.sleep(.5)
             self.move(self.j1_UH, self.j2_UH, self.j3_UH)
+            self.motor.value(1)
+            self.vacuum.value(1)
             utime.sleep(self.delay_harvesting)
+            self.motor.value(0)
+            self.vacuum.value(0)
             picking = 1
 
     def base_pose(self):
