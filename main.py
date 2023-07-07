@@ -39,21 +39,28 @@ DEGREE = 14.4 # steps per degree
 
 #taken from mom_uart_commands
 def send_command(command):
+    # Values to chage how long the pi waits for each type of pico message, a start and finish
+    start_timeout = 1
+    complete_timeout = 10
+
+    # Starts writing command to pico
     pico.write(command.encode())
     print("Sent pico the command: ", command)
-    sent = wait_for_start(5, command)
+    sent = wait_for_start(start_timeout, command)
     error_count = 0
+
+    # This is an error to try to see if the pico will return the correct response after 3 attempts
     if sent == "error":
         while error_count < 3:
             print("Small error in communication, retrying now!")
             error_count += 1
-            sent = wait_for_start(5, command)
+            sent = wait_for_start(start_timeout, command)
     elif sent == "bad send":
         return False
                         
     elif sent == "success":
         print("Pico Succesfully received and started my command!")
-        completed = wait_for_completion(10, command) 
+        completed = wait_for_completion(complete_timeout, command) 
         if completed == "error":  
             print("Pico had an error. brian is sad.")
             return False
