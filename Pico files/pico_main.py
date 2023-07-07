@@ -49,107 +49,44 @@ def harvest(high, low):
 def get_to_wall():
     print("get to wall")
     Drive.Find_wall()
-    
-    # Temprarily to test my code. No need to keep once I confirm the code is complete.
-    time.sleep(5)
+    #time.sleep(5)
     return True
+    
 # Go home needs to have the roomba dead reckon to a finishing corner
 def go_home():
     print("I want to go home")
     Drive.Find_corner()
-    
-    # Temprarily to test my code. No need to keep once I confirm the code is complete.
-    time.sleep(5)
+    #time.sleep(5)
     return True
 
-# Outside Right is our function where the robot dead reckons to a new row of cotton on the opposite
-# side of the wall it was just farming.
 def outside_right():
     print("turn right")
     Drive.Right_corner()
-    
-    # Temprarily to test my code. No need to keep once I confirm the code is complete.
-    time.sleep(5)
     return True
-# Inside left is the 180 degree turn where the robot turns to face the wall it has yet to harvest 
-# in the row it just drove down.
+
 def inside_left():
     print("yes its a left turn, it may not look like it but it's left.")
     Drive.Left_corner()
-    
-    # Temprarily to test my code. No need to keep once I confirm the code is complete.
-    time.sleep(5)
     return True
-
-'''
-# Motors is the controls for the wall follow to use and send constant info. Another big thing for this
-# function that needs to be done is that the function needs to constantly read readings from uart. After
-# getting my code working for uart I believe theres a bit more of a action delay than I originally thought
-# so I may setup a quicker second uart connection for the numbers to read from. But this should be unnecessary
-# atm.
-# The math of this function needs its variables double checked. atm I havent done this personally.
-
-# for use with realsence
-def motors(velocity, direction):
-    print("Driving motors!")
-    v = velocity/1000
-    d = direction/1000
-    r = 3.5/2 # Done in inches atm
-    w_r = (v*r) + d
-    w_l = (v*r) - d
-    
-    ###############################################
-    # Carsons code here
-    # or whoever else may write this in the future
-    # If carson chooses to update this. For the dead
-    # reckoning functions he may choose to run those
-    # off the pi and send variables, but I assume he
-    # will run the motors from the pico itself if 
-    # the command is given. But agency yk
-    ###############################################
-    
-    # Temprarily to test my code. No need to keep once I confirm the code is complete.
-    time.sleep(5)
-    return True
-    
-# Splices string simply for the motors command to get three variables. The command drive,
-# the velocity, and direction.
-# This is also outdated and not used, but I kept it here for posterity reasons? idk
-def splice_string(string):
-    if len(string) != 18:
-        return None
-
-    part1 = string[:6]
-    part2 = string[6:12]
-    part3 = string[12:]
-
-    return part1, part2, part3
-# Turn functions for the roomba to receive basic movement commands for the Adjust()
-# function
-'''
 
 def left(steps):
     Drive.turn(steps, dir = 'l')
     drive_commands.Stop()
-    
     return True
 
 def right(steps):
     Drive.turn(steps)
     drive_commands.Stop()
-    
     return True
 
 def forward(steps):
     Drive.DriveStraight(steps)
     drive_commands.Stop()
-    
     return True
     
 def back(steps)
     Drive.DriveStraight(steps, dir = 'b')
     drive_commands.Stop()
-    
     return True
 
 # Main function here. This always runs and is looking for a new command from the pi which will be pretty
