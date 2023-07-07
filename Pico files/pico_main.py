@@ -134,13 +134,13 @@ while True:             # Keeps it always running
             
         # direction commands for the brand new Adjust() function
         elif message_str[:4] == "left":
-            completed = left(int(message_str[4:]))
+            completed = left(round(float(message_str[4:])))
         elif message_str[:5] == "right":
-            completed = right(int(message_str[5:]))
+            completed = right(round(float(message_str[5:])))
         elif message_str[:7] == "forward":
-            completed = forward(int(message_str[7:]))
+            completed = forward(round(float(message_str[7:])))
         elif message_Str[:4] == "back":
-            completed = back(int(message_str[4:]))
+            completed = back(round(float(message_str[4:])))
             
         elif message_str == "get_to_wall":		# Starts from corner and needs to get within real sense range of the first wall
             completed = get_to_wall()
