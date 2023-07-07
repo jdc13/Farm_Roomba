@@ -41,7 +41,7 @@ DEGREE = 14.4 # steps per degree
 def send_command(command):
     # Values to chage how long the pi waits for each type of pico message, a start and finish
     start_timeout = 1
-    complete_timeout = 10
+    complete_timeout = 20
 
     # Starts writing command to pico
     pico.write(command.encode())
