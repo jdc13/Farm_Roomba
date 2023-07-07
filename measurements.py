@@ -47,7 +47,7 @@ def measure_x_theta():
             theta = np.degrees(np.arctan(slope))
             # r2 = r**2
             
-        print("x_meas: ", intercept)
+        print("x_meas: ", x)
         print("theta_meas: ", theta)
         return x, theta
     except:

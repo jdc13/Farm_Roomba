@@ -241,15 +241,16 @@ while True:
 
         case 'harvest':
             while bollCounter < 9:
-                adjust()
+                #adjust()
                 #ripeness_map, ripeness_harvest = identify() # Color Sensing of each bulb
                 #mapping(ripeness_map, bollCounter)  # Map and store data
                 send_command("forward" + str(INCH * 8.25))  #TODO: tune this number: Distance in steps between color camera and robot arm
                 
                 #harvest_cotton(ripeness_harvest)
-                #harvest_cotton([0,1])
+                harvest_cotton([1,0])
                 if bollCounter < 9:
                     send_command("back" + str(INCH * 3.25)) #TODO: Tune this number! Distance of overshoot to get camera aligned with next boll
+                    #pass
                 bollCounter = bollCounter + 1 
 
             rowCounter = rowCounter + 1
