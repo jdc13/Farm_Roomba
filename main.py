@@ -227,7 +227,7 @@ def harvest_cotton(ripeness):
     
 state = 'harvest'#'init'
 bollCounter = 1
-rowCounter = 0
+rowCounter = 1
 
 while True:
     match state:
