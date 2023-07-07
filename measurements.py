@@ -31,6 +31,7 @@ def measure_x_theta():
             
             ### Filter Image
             wall_mask = F.Wall_Filter(cam.color_image)
+            wall_mask[0:40,:] = np.zeros([40,424])
             depth_mask = cv2.inRange(cam.depth_image,0,1) #This mask filters out the bad data
 
             ### Generate the point cloud:
