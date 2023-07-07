@@ -71,22 +71,22 @@ def inside_left():
 
 def left(steps):
     Drive.turn(steps, dir = 'l')
-    drive_commands.Stop()
+    Drive.Stop()
     return True
 
 def right(steps):
     Drive.turn(steps)
-    drive_commands.Stop()
+    Drive.Stop()
     return True
 
 def forward(steps):
     Drive.DriveStraight(steps)
-    drive_commands.Stop()
+    Drive.Stop()
     return True
     
 def back(steps):
     Drive.DriveStraight(steps, dir = 'b')
-    drive_commands.Stop()
+    Drive.Stop()
     return True
 
 # Main function here. This always runs and is looking for a new command from the pi which will be pretty
