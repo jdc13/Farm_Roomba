@@ -34,7 +34,7 @@ unripe = 1
 empty = 2
 
 # Tuning: number of steps per unit
-INCH = 143.76 # steps per inch
+INCH = 145 # steps per inch
 DEGREE = 14.4 # steps per degree
 
 #taken from mom_uart_commands
@@ -112,7 +112,7 @@ def wait_for_completion(timeout_duration, command):
                 
 def adjust():
     #constants needs for the function
-    theta_man = 30	# Roomba will always turn at a 30 degree angle for calculation purposes
+    theta_man = 20	# Roomba will always turn at a 20 degree angle for calculation purposes
     # X is measured distance of roomba to the wall.
     x_des = 7.5  # desired distance from the wall, in inches
     x_max = 0.25
