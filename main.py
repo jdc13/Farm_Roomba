@@ -255,7 +255,7 @@ while True:
 
             if rowCounter in {1, 3, 5}:
                 state = 'outside_right'
-            elif rowCounter in {2, 4}
+            elif rowCounter in {2, 4}:
                 state = 'inside_left'
             elif rowCounter == 6:
                 state = 'go_home'
