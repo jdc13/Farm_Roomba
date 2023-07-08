@@ -73,6 +73,7 @@ def measure_ripe():
                         [-1,-1,-1]])
     cam.color_image = cv2.filter2D(cam.color_image, -2, kernel)
     _, ripe_bolls, unripe_bolls = F.Harvest_Filter(cam.color_image)
+    return ripe_bolls, unripe_bolls
 
 
 
