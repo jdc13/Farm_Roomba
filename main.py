@@ -226,7 +226,7 @@ def harvest_cotton(ripeness):
         send_command("harvest11") #Harvest Nothing
     
 state = 'harvest'#'init'
-bollCounter = 1
+bollCounter = 10
 rowCounter = 2
 
 while True:
