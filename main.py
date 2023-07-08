@@ -214,7 +214,7 @@ def identify():
     else: 
         lower_boll = empty
     print("Upper Boll: ", upper_boll)
-    print("Lower Boll" ", lower_boll)
+    print("Lower Boll: ", lower_boll)
     ripeness_harvest = [lower_boll, upper_boll]
 
     return ripeness_map, ripeness_harvest
