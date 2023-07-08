@@ -213,10 +213,10 @@ def identify():
         lower_boll = unripe
     else: 
         lower_boll = empty
-    print("Upper Boll: ", upper_boll)
-    print("Lower Boll: ", lower_boll)
     ripeness_harvest = [lower_boll, upper_boll]
 
+    print("Upper Boll: ", upper_boll)
+    print("Lower Boll: ", lower_boll)
     return ripeness_map, ripeness_harvest
 
 def mapping(ripeness, bollCount):
@@ -239,7 +239,7 @@ def harvest_cotton(ripeness):
     
 state = 'harvest'#'init'
 bollCounter = 1
-rowCounter = 1
+rowCounter = 2
 
 while True:
     match state:
@@ -259,16 +259,16 @@ while True:
                 send_command("forward" + str(INCH * 8.25))
 
                 if rowCounter == 1:
-                    pass
                     #harvest_cotton([1,0]) # just lower row, don't need to sense
+                    pass
                 elif rowCounter == 3:
-                    pass
                     #harvest_cotton([0,0]) # upper and lower rows, don't need to sense
-                else: # other rows have unripe or missing, need to sense
                     pass
-                    #ripeness_map, ripeness_harvest = identify() # Color Sensing of each bulb
+                else: # other rows have unripe or missing, need to sense
+                    ripeness_map, ripeness_harvest = identify() # Color Sensing of each bulb
                     #mapping(ripeness_map, bollCounter)  # Map and store data
                     #harvest_cotton(ripeness_harvest)
+                    #pass
                 
                 if bollCounter < 9:
                     send_command("back" + str(INCH * 3.25))
