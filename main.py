@@ -40,7 +40,7 @@ DEGREE = 14.4 # steps per degree
 #taken from mom_uart_commands
 def send_command(command):
     # Values to chage how long the pi waits for each type of pico message, a start and finish
-    start_timeout = 1
+    start_timeout = 0.5
     complete_timeout = 20
 
     # Starts writing command to pico
