@@ -157,10 +157,10 @@ def adjust():
         send_command("forward" + str(forward_dist))
         
     # Will update the angle if roomba is more than a degree off either way.
-    elif theta_meas < theta_min:
-        send_command("left" + str(-DEGREE*theta_meas))
     elif theta_meas > theta_max:
-        send_command("right" + str(DEGREE*theta_meas))
+        send_command("left" + str(DEGREE*theta_meas))
+    elif theta_meas < theta_min:
+        send_command("right" + str(-DEGREE*theta_meas))
 
     y_meas = measurements.measure_y()
     #Updates Y distance after
