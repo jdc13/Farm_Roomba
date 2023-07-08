@@ -252,7 +252,7 @@ while True:
                 elif rowCounter == 3:
                     pass
                     #harvest_cotton([0,0]) # upper and lower rows, don't need to sense
-                else # other rows have unripe or missing, need to sense
+                else: # other rows have unripe or missing, need to sense
                     pass
                     #ripeness_map, ripeness_harvest = identify() # Color Sensing of each bulb
                     #mapping(ripeness_map, bollCounter)  # Map and store data
