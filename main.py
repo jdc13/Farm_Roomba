@@ -112,7 +112,7 @@ def wait_for_completion(timeout_duration, command):
                 
 def adjust():
     #constants needs for the function
-    theta_man = 20	# Roomba will always turn at a 20 degree angle for calculation purposes
+    theta_man = 30	# Roomba will always turn at a 30 degree angle for calculation purposes
     # X is measured distance of roomba to the wall.
     x_des = 7.375  # desired distance from the wall, in inches
     x_max = 0.25
