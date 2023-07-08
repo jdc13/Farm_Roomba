@@ -46,6 +46,7 @@ def send_command(command):
     # Starts writing command to pico
     pico.write(command.encode())
     print("Sent pico the command: ", command)
+    '''
     sent = wait_for_start(start_timeout, command)
     error_count = 0
 
@@ -67,7 +68,16 @@ def send_command(command):
         elif completed == "success":
             print("Success! Mom had 100% faith.")
             return True
-        
+    '''
+    completed = wait_for_completion(complete_timeout, command) 
+    if completed == "error":  
+        print("Pico had an error. brian is sad.")
+        return False
+    elif completed == "success":
+        print("Success! Mom had 100% faith.")
+        return True
+
+
 def wait_for_start(timeout_duration, command):
     print("\nNow looking for the start signal...")
 
@@ -203,6 +213,8 @@ def identify():
         lower_boll = unripe
     else: 
         lower_boll = empty
+    print("Upper Boll: ", upper_boll)
+    print("Lower Boll" ", lower_boll)
     ripeness_harvest = [lower_boll, upper_boll]
 
     return ripeness_map, ripeness_harvest
