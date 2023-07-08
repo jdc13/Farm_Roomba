@@ -134,7 +134,7 @@ def adjust():
         delta_x = x_meas - x_des
         forward_dist = INCH * delta_x / np.tan(np.radians(theta_man))       
         back_dist = forward_dist / np.cos(np.radians(theta_man))
-        theta_turn = DEGREE * (theta_man - theta_meas)
+        theta_turn = DEGREE * (theta_man + theta_meas)
         theta_man_turn = DEGREE * theta_man 
         
         send_command("left" + str(theta_turn))
@@ -148,7 +148,7 @@ def adjust():
         delta_x = x_meas - x_des
         forward_dist = -INCH * delta_x / np.tan(np.radians(theta_man))
         back_dist = forward_dist / np.cos(np.radians(theta_man)) 
-        theta_turn = DEGREE * (theta_man + theta_meas)
+        theta_turn = DEGREE * (theta_man - theta_meas)
         theta_man_turn = DEGREE * theta_man
         
         send_command("right" + str(theta_turn))
