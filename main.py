@@ -253,9 +253,9 @@ while True:
                     pass
                 bollCounter = bollCounter + 1 
 
-            if rowCounter == 1 or 3 or 5:
+            if rowCounter in {1, 3, 5}:
                 state = 'outside_right'
-            elif rowCounter == 2 or 4 :
+            elif rowCounter in {2, 4}
                 state = 'inside_left'
             elif rowCounter == 6:
                 state = 'go_home'
