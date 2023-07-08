@@ -253,21 +253,21 @@ while True:
                     pass
                 bollCounter = bollCounter + 1 
 
-            rowCounter = rowCounter + 1
             if rowCounter == 1 or 3 or 5:
                 state = 'outside_right'
             elif rowCounter == 2 or 4 :
                 state = 'inside_left'
             elif rowCounter == 6:
                 state = 'go_home'
+            rowCounter = rowCounter + 1
 
         case 'outside_right':
-            send_command("outside_right") # TODO Update forward distances based on how far we move in adjust()
+            send_command("outside_right") 
             bollCounter = 1
             state = 'harvest'
 
         case 'inside_left':
-            send_command("inside_left") # TODO Update forward distances based on how far we move in adjust()
+            send_command("inside_left")
             bollCounter = 1
             state = 'harvest'
 
