@@ -77,7 +77,6 @@ def send_command(command):
         print("Success! Mom had 100% faith.")
         return True
 
-
 def wait_for_start(timeout_duration, command):
     print("\nNow looking for the start signal...")
 
@@ -266,11 +265,12 @@ while True:
                 else: # other rows have unripe or missing, need to sense
                     ripeness_map, ripeness_harvest = identify() # Color Sensing of each bulb
                     #mapping(ripeness_map, bollCounter)  # Map and store data
-                    send_command("forward" + str(INCH * 8.25))
+                    #send_command("forward" + str(INCH * 8.25))
                     #harvest_cotton(ripeness_harvest)
                 
                 if bollCounter < 9:
-                    send_command("back" + str(INCH * 3.25))
+                    #send_command("back" + str(INCH * 3.25))
+                    pass
                 
                 bollCounter = bollCounter + 1 
 
