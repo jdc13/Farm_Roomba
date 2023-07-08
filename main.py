@@ -268,7 +268,7 @@ while True:
                     ripeness_map, ripeness_harvest = identify() # Color Sensing of each bulb
                     #mapping(ripeness_map, bollCounter)  # Map and store data
                     #harvest_cotton(ripeness_harvest)
-                    #pass
+                    pass
                 
                 if bollCounter < 9:
                     send_command("back" + str(INCH * 3.25))
