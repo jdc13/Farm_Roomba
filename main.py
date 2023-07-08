@@ -247,10 +247,13 @@ while True:
                 send_command("forward" + str(INCH * 8.25))
 
                 if rowCounter == 1:
+                    pass
                     #harvest_cotton([1,0]) # just lower row, don't need to sense
                 elif rowCounter == 3:
+                    pass
                     #harvest_cotton([0,0]) # upper and lower rows, don't need to sense
                 else # other rows have unripe or missing, need to sense
+                    pass
                     #ripeness_map, ripeness_harvest = identify() # Color Sensing of each bulb
                     #mapping(ripeness_map, bollCounter)  # Map and store data
                     #harvest_cotton(ripeness_harvest)
