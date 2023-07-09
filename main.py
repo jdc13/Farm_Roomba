@@ -25,7 +25,7 @@ class states:
 
 #initialize a dataframe of 0s the size of the map
 #6 rows, 9 plants, only 3 rows are relevant
-map = pd.DataFrame(np.zeros((3,9)), 
+map = pd.DataFrame(np.zeros((3,10)), 
                    index=[2,4,6], 
                    columns=['Row:','P1','P2','P3','P4','P5','P6','P7','P8','P9'])
 
