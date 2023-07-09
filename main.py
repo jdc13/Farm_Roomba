@@ -46,7 +46,7 @@ def send_command(command):
     # Starts writing command to pico
     pico.write(command.encode())
     print("Sent pico the command: ", command)
-    '''
+    
     sent = wait_for_start(start_timeout, command)
     error_count = 0
 
@@ -76,6 +76,7 @@ def send_command(command):
     elif completed == "success":
         print("Success! Mom had 100% faith.")
         return True
+    '''
 
 def wait_for_start(timeout_duration, command):
     print("\nNow looking for the start signal...")
