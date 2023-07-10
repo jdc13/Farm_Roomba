@@ -38,6 +38,8 @@ unripe = 1
 
 #taken from mom_uart_commands
 def send_command(command):
+    '''
+    
     pico.write(command.encode())
     print("Sent pico the command: ", command)
     sent = wait_for_start(5, command)
@@ -59,7 +61,31 @@ def send_command(command):
         elif completed == "success":
             print("Success! Mom had 100% faith.")
             return True
-        
+ '''       
+    # def send_command(command):
+    pico.write(command.encode())# send the pico a command
+    #encodes the string, using the specified encoding. If no encoding is specified, UTF-8 will be used. - python method
+    print("Sent pico the command: ", command)# print out current action
+    sent = wait_for_start(5, command) 
+    error_count = 0
+    if sent == "error":
+        while error_count < 3: #if wiat for start retuns 3 errors
+            print("Small error in communication, retrying now!")
+            error_count += 1
+            sent = wait_for_start(5, command)
+    elif sent == "bad send":
+        return False
+                        
+    elif sent == "success":
+        print("Pico Succesfully received and started my command!")
+        completed = wait_for_completion(10, command) 
+        if completed == "error":  
+            print("Pico had a error. brians sad.")
+            return False
+        elif completed == "success":
+            print("Success! Mom had 100% faith.")
+            return True
+            
 def wait_for_start(timeout_duration, command):
     print("\nNow looking for the start signal...")
 
