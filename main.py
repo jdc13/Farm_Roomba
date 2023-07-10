@@ -57,7 +57,7 @@ def send_command(command):
             error_count += 1
             sent = wait_for_start(start_timeout, command)
     elif sent == "bad send":
-        return False
+        break
                         
     elif sent == "success":
         print("Pico Succesfully received and started my command!")
@@ -68,7 +68,7 @@ def send_command(command):
         elif completed == "success":
             print("Success! Mom had 100% faith.")
             return True
-    '''
+    
     completed = wait_for_completion(complete_timeout, command) 
     if completed == "error":  
         print("Pico had an error. brian is sad.")
@@ -76,7 +76,7 @@ def send_command(command):
     elif completed == "success":
         print("Success! Mom had 100% faith.")
         return True
-    '''
+    
 
 def wait_for_start(timeout_duration, command):
     print("\nNow looking for the start signal...")
