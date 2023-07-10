@@ -56,7 +56,7 @@ def send_command(command):
             print("Small error in communication, retrying now!")
             error_count += 1
             sent = wait_for_start(start_timeout, command)
-   ''' 
+   '''
    elif sent == "bad send":
         break
                         
