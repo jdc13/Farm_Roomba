@@ -293,7 +293,7 @@ while True:
                     harvest_cotton([0,0]) # upper and lower rows, don't need to sense
                 else: # other rows have unripe or missing, need to sense
                     ripeness_map, ripeness_harvest = identify() # Color Sensing of each bulb
-                    #mapping(ripeness_map, bollCounter)  # Map and store data
+                    mapping(ripeness_map, bollCounter)  # Map and store data
                     send_command("forward" + str(INCH * 8.25))
                     harvest_cotton(ripeness_harvest)
                 
@@ -322,7 +322,7 @@ while True:
             state = 'harvest'
 
         case 'go_home':
-            pass
-            # send_command("go_home")
+            
+            send_command("go_home")
             # export CSV file in the prescribed format:
-            #map.to_csv("/media/farmroomba/BRIANUSB/FarmRoomba.csv", index_label="Row:", encoding="utf-8") #Path will need to be changed
+            map.to_csv("/media/farmroomba/BRIANUSB/FarmRoomba.csv", index_label="Row:", encoding="utf-8")
