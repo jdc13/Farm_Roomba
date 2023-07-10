@@ -64,7 +64,7 @@ def Harvest_Filter(color_image):
 
     #finds boll location in next 2 lines
     ripe_bolls = find_bolls(ripe_mask, 10000) #This tolerance needs to be found expirimentally 
-    unripe_bolls = find_bolls(unripe_mask, 100) #Tolerance needs to be found exipirimentally
+    unripe_bolls = find_bolls(unripe_mask, 10000) #Tolerance needs to be found exipirimentally
 
     # Find the location of the ripe bolls
     # combined_mask = np.logical_or(ripe_mask, unripe_mask) #Combine the two masks to look at the ripe and unripe bolls at the same time
