@@ -39,6 +39,33 @@ DEGREE = 14.4 # steps per degree
 
 #taken from mom_uart_commands
 def send_command(command):
+    # def send_command(command):
+    pico.write(command.encode())# send the pico a command
+    #encodes the string, using the specified encoding. If no encoding is specified, UTF-8 will be used. - python method
+    print("Sent pico the command: ", command)# print out current action
+    sent = wait_for_start(5, command) 
+    error_count = 0
+    if sent == "error":
+        while error_count < 3: #if wiat for start retuns 3 errors
+            print("Small error in communication, retrying now!")
+            error_count += 1
+            sent = wait_for_start(5, command)
+    elif sent == "bad send":
+        return False
+                        
+    elif sent == "success":
+        print("Pico Succesfully received and started my command!")
+        completed = wait_for_completion(10, command) 
+        if completed == "error":  
+            print("Pico had a error. brians sad.")
+            return False
+        elif completed == "success":
+            print("Success! Mom had 100% faith.")
+            return True
+
+
+
+    '''#######
     # Values to chage how long the pi waits for each type of pico message, a start and finish
     start_timeout = 0.5
     complete_timeout = 20
@@ -56,7 +83,7 @@ def send_command(command):
             print("Small error in communication, retrying now!")
             error_count += 1
             sent = wait_for_start(start_timeout, command)
-    '''
+    
     elif sent == "bad send":
         break
                         
@@ -69,7 +96,7 @@ def send_command(command):
         elif completed == "success":
             print("Success! Mom had 100% faith.")
             return True
-    '''
+    
     completed = wait_for_completion(complete_timeout, command) 
     if completed == "error":  
         print("Pico had an error. brian is sad.")
@@ -77,7 +104,7 @@ def send_command(command):
     elif completed == "success":
         print("Success! Mom had 100% faith.")
         return True
-    
+    '''
 
 def wait_for_start(timeout_duration, command):
     print("\nNow looking for the start signal...")
