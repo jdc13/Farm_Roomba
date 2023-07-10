@@ -282,7 +282,7 @@ while True:
         case 'harvest':
             while bollCounter < 10:
                 if bollCounter in {2,3,4,5,6,7,8}:
-                    #adjust()
+                    adjust()
                     pass
             
                 if rowCounter == 1:
