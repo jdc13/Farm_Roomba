@@ -297,4 +297,4 @@ while True:
             pass
             # send_command("go_home")
             # export CSV file in the prescribed format:
-            #map.to_csv("/Users/carsontownsend/Desktop/FarmRoomba.csv", index_label="Row:", encoding="utf-8") #Path will need to be changed
+            #map.to_csv("/media/farmroomba/BRIANUSB/FarmRoomba.csv", index_label="Row:", encoding="utf-8") #Path will need to be changed
