@@ -3,6 +3,7 @@
 
 
 #Standard libraries
+import csv
 import cv2
 import numpy as np
 import scipy.stats as stat
@@ -23,8 +24,8 @@ cam.get_frames() #Reject 1st frame
 
 # This try function is because the realsense camera was feeding bad data, to the point it was causing crashes. 
 theta = 90
-while(abs(theta) > 5):
-    cam.get_frames()#update camera data
+while(abs(theta) > 80):
+    cam.get_frames() #update camera data
     # print("Have new frame")
     #Blur then sharpen the image to get a better filter result
     cam.color_image =  cv2.blur(cam.color_image,[10,10])
@@ -36,6 +37,7 @@ while(abs(theta) > 5):
     # Will generate a mask that filters things out later.
     boll_loc, ripe_bolls, unripe_bolls = F.Harvest_Filter(cam.color_image)
     wall_mask = F.Wall_Filter(cam.color_image)
+    wall_mask[0:40,:] = np.zeros([40,424])
     HSV = cv2.cvtColor(cam.color_image, cv2.COLOR_BGR2HSV)
     ripe_mask = cv2.inRange(HSV, F.ripe_low, F.ripe_high)
     ripe_mask = ripe_mask[:,42:383]
@@ -53,9 +55,23 @@ while(abs(theta) > 5):
     #Get the points in the x-z plane
     X = np.transpose(pc[:,0]) #first column of the point cloud
     Z = np.transpose(pc[:,2]) #third column of the point cloud
+    
+
+    #data = [X,Z]
+    #with open('tmp_file.txt', 'w') as f:
+    #    csv.writer(f, delimiter=' ').writerows(data)
+
     slope, intercept, r, p, se = stat.linregress(X, Z)
     r2 = r**2
     # print("R Squared: ", r2)
+
+
+    length = np.arange(-.3,.4,.1)
+    wall = slope*length + intercept
+    residual = wall - Z
+    # throw away points in array with highest residuals, save new array of points
+    # redo regression
+
 
     # print(slope)
     #Find the angle and run the controller.
@@ -75,6 +91,7 @@ cv2.imshow("unripe_mask", unripe_mask)
 fig = plt.figure(1)
 length = np.arange(-.3,.4,.1)
 wall = slope*length + intercept
+residual = wall - Z
 tar = np.ones(np.shape(length))*target
 
 plt.title("looking down")
