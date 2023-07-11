@@ -248,8 +248,8 @@ while True:
 
         case 'get_to_wall':
             send_command("get_to_wall")
-            state = 'go_home'
-            rowCounter = 6
+            state = 'harvest'
+            
 
         case 'harvest':
             while bollCounter < 10:
