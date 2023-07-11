@@ -248,7 +248,7 @@ while True:
 
         case 'get_to_wall':
             send_command("get_to_wall")
-            state = 'harvest'
+            state = 'go_home'
             rowCounter = 6
 
         case 'harvest':
