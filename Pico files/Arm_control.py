@@ -16,7 +16,12 @@ class Armcontrol:
         self.joint3.freq(frequency)
         self.vacuum = Pin(11, Pin.OUT)
         self.motor = Pin(12, Pin.OUT)
+        
+        self.vacuum.value(0)
+        self.motor.value(0)
 
+        self.ripe = 0
+        self.unripe = 1
         #------------Angles Guide----------------
         # Servo motors are 270 degree servos
         # J1 is the Shoulder
@@ -79,16 +84,16 @@ class Armcontrol:
         self.current_ang3 = self.j3_0
         self.state = 0
 
-    def harvest_time(self, ripe=[0, 0]):
+    def harvest_time(self, ripe=[0, 0]):# (low,high)
+        
         # state machine for harvesting
         picking = 0
         while picking == 0:
             if self.state == 0: # base state
-                if ripe[0] == 0: # if lower is ripe
+                if ripe[0] == self.ripe: # if lower is ripe
                     self.pick_lower_bulb() # pick lower
                     self.state= 1 
-                elif ripe[1] == 0: # else if upper is ripe
-                    self.intermediate_pose() #move to intermediate first
+                elif ripe[1] == self.ripe: # else if upper is ripe
                     self.pick_upper_bulb() #pick upper
                     self.state = 3 # go to end state
                 else:
@@ -97,7 +102,7 @@ class Armcontrol:
                     picking = 1 # and end while loop
 
             elif self.state == 1: # at lower
-                if ripe[1] == 0:
+                if ripe[1] == self.ripe:
                     self.intermediate_pose()
                     self.state = 2
                 else:
@@ -106,7 +111,7 @@ class Armcontrol:
                     picking = 1
             
             elif self.state == 2:# at upper
-                if ripe[1] == 0:
+                if ripe[1] == self.ripe:
                     self.pick_upper_bulb()
                     self.state = 3
 
@@ -215,10 +220,9 @@ class Armcontrol:
             
 if __name__ == "__main__":
     arm= Armcontrol()
-    arm.harvest_time(ripe=[0,0])
-    utime.sleep(2)
-    arm.harvest_time(ripe=[1,0])
-    utime.sleep(2)
-    arm.harvest_time(ripe=[0,1])
+    
+    
         
         
+
+
