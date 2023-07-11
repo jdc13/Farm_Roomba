@@ -298,8 +298,8 @@ while True:
             # export CSV file in the prescribed format:#1C72-98D8
             map.to_csv("/media/farmroomba/BRIANUSB1/FarmRoomba.csv", index_label="Row:", encoding="utf-8")
             state = 'Done'
-        case 'done'
-            while True
+        case 'done':
+            while True:
                 sleep(5)
 
         
