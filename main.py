@@ -47,7 +47,7 @@ def send_command(command):
     # Values to change how long the pi waits for each type of pico message, a start and finish
     start_timeout = 3
     complete_timeout = 20
-    sent = wait_for_start(start_timeout, command) 
+    #sent = wait_for_start(start_timeout, command) 
     error_count = 0
     '''
     # This is an error to try to see if the pico will return the correct response after 3 attempts
