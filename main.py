@@ -230,15 +230,15 @@ def harvest_cotton(ripeness):
     if ripeness[0] == ripe and ripeness[1] == ripe:
         send_command("harvest00") #Harvest Both
     elif ripeness[0] == unripe and ripeness[1] == ripe:
-        send_command("harvest10") #Harvest Lower Bulb
+        send_command("harvest10") #Harvest Upper Bulb
     elif ripeness[0] == ripe and ripeness[1] == unripe:
-        send_command("harvest01") #Harvest Upper Bulb
+        send_command("harvest01") #Harvest Lower Bulb
     elif ripeness[0] == unripe and ripeness[1] == unripe:
         send_command("harvest11") #Harvest Nothing
     
-state = 'harvest'
+state = 'get_to_wall'
 bollCounter = 1
-rowCounter = 2
+rowCounter = 1
 
 while True:
     match state:
