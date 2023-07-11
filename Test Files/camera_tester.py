@@ -55,20 +55,35 @@ while(abs(theta) > 80):
     #Get the points in the x-z plane
     X = np.transpose(pc[:,0]) #first column of the point cloud
     Z = np.transpose(pc[:,2]) #third column of the point cloud
-    
+
+    T=np.stack((X,Z))
+    T=
 
     #data = [X,Z]
     #with open('tmp_file.txt', 'w') as f:
     #    csv.writer(f, delimiter=' ').writerows(data)
-
+    length = np.arange(-.3,.4,.1)
+    
     slope, intercept, r, p, se = stat.linregress(X, Z)
     r2 = r**2
     # print("R Squared: ", r2)
 
 
-    length = np.arange(-.3,.4,.1)
+    
     wall = slope*length + intercept
-    residual = wall - Z
+    residual =np.absolute(np.subtract(wall,Z))
+    for i in range 10:
+        max_residual_index = residual.index(max(residual))
+        residual = data[:max_residual_index] + data[max_residual_index + 1:]
+    
+    
+
+   
+
+    
+    
+    
+    
     # throw away points in array with highest residuals, save new array of points
     # redo regression
 
