@@ -44,8 +44,8 @@ class Armcontrol:
         self.j1_L = .20
         self.j1_LH = .21
         self.j1_I = .18
-        self.j1_U = .23
-        self.j1_UH = .24
+        self.j1_U = .18
+        self.j1_UH = .22
     
 
         #------------Joint 2 Angles--------------
@@ -54,9 +54,9 @@ class Armcontrol:
         self.j2_0 = .226
         self.j2_L = .185
         self.j2_LH = .18
-        self.j2_I = .17
-        self.j2_U = .11
-        self.j2_UH = .1
+        self.j2_I = .16
+        self.j2_U = .16
+        self.j2_UH = .121
 
         #------------Joint 3 Angles--------------
         
@@ -68,8 +68,8 @@ class Armcontrol:
         self.j3_L = .16
         self.j3_LH = .158
         self.j3_I = .16
-        self.j3_U = .11
-        self.j3_UH = .115
+        self.j3_U = .16
+        self.j3_UH = .11
         
         
         #Write the motors to the start position and set the current angle 
@@ -220,13 +220,22 @@ class Armcontrol:
             
 if __name__ == "__main__":
     arm= Armcontrol()
+    
+    #arm.move(arm.j1_I, arm.j2_I, arm.j3_I)
+    #utime.sleep(.5)
     arm.move(arm.j1_L, arm.j2_L, arm.j3_L)
-    utime.sleep(.5)
+    #utime.sleep(.5)
     arm.move(arm.j1_LH, arm.j2_LH, arm.j3_LH)
-    arm.motor.value(1)
+    utime.sleep(1)
+    #arm.move(arm.j1_U, arm.j2_U, arm.j3_U)
+   # utime.sleep(.5)
+    #arm.move(arm.j1_UH, arm.j2_UH, arm.j3_UH)
+    #utime.sleep(1)
+    #arm.move(arm.j1_LH, arm.j2_LH, arm.j3_LH)
+    #arm.motor.value(1)
     #arm.vacuum.value(1)
-    utime.sleep(arm.delay_harvesting)
-    arm.motor.value(0)
+    #utime.sleep(arm.delay_harvesting)
+    #arm.motor.value(0)
    # arm.vacuum.value(0)
     
     
