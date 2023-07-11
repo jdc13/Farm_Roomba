@@ -74,7 +74,8 @@ while(abs(theta) > 80):
     residual =np.absolute(np.subtract(wall,Z))
     for i in range 10:
         max_residual_index = residual.index(max(residual))
-        residual = data[:max_residual_index] + data[max_residual_index + 1:]
+        residual = [:max_residual_index] + data[max_residual_index + 1:]
+        data = data[:max_residual_index] + data[max_residual_index + 1:]
     
     
 
