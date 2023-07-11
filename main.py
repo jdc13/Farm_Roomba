@@ -248,7 +248,8 @@ while True:
 
         case 'get_to_wall':
             send_command("get_to_wall")
-            state = 'go_home'
+            state = 'harvest'
+            rowCounter = 6
 
         case 'harvest':
             while bollCounter < 10:
@@ -280,7 +281,7 @@ while True:
                 state = 'inside_left'
             elif rowCounter == 6:
                 state = 'go_home'
-            rowCounter = rowCounter + 1
+            rowCounter = rowCounter + 5
 
         case 'outside_right':
             send_command("outside_right") 
