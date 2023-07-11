@@ -74,9 +74,12 @@ while(abs(theta) > 80):
     residual =np.absolute(np.subtract(wall,Z))
     for i in range 10:
         max_residual_index = residual.index(max(residual))
-        residual = [:max_residual_index] + data[max_residual_index + 1:]
-        data = data[:max_residual_index] + data[max_residual_index + 1:]
+        residual = residual[:max_residual_index] + residual[max_residual_index + 1:]
+        X = X[:max_residual_index] + X[max_residual_index + 1:]
+        Z = Z[:max_residual_index] + Z[max_residual_index + 1:]
+
     
+    slope, intercept, r, p, se = stat.linregress(X, Z)
     
 
    
