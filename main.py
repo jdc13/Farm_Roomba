@@ -258,7 +258,7 @@ while True:
             
                 if rowCounter == 1:
                     send_command("forward" + str(INCH * 8.25))
-                    harvest_cotton([1,0]) # just lower row, don't need to sense
+                    harvest_cotton([0,1]) # just lower row, don't need to sense
                 elif rowCounter == 3:
                     send_command("forward" + str(INCH * 8.25))
                     harvest_cotton([0,0]) # upper and lower rows, don't need to sense
