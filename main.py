@@ -236,8 +236,8 @@ def harvest_cotton(ripeness):
     elif ripeness[0] == unripe and ripeness[1] == unripe:
         send_command("harvest11") #Harvest Nothing
     
-state = 'get_to_wall'
-bollCounter = 1
+state = 'harvest'
+bollCounter = 9
 rowCounter = 1
 
 while True:
