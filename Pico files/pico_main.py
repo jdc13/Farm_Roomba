@@ -11,31 +11,35 @@ import time
 from Driving import Driving_control
 from Arm_control import Armcontrol
 
+print("pls")
+
 # Creates a uart connection with Mom, that it will save to, and then respond back that it has been received
 mom = machine.UART(0, baudrate=9600, bits=8, parity=None, stop=1, tx=machine.Pin(0), rx=machine.Pin(1))
 Arm = Armcontrol()
 Drive = Driving_control()
+ripe = 0
+unripe = 1
 
 # There is one harvest function, that will get input from the switch statement on what cotton bolls
 # to harvest. This info is passed through and we can program 3 different harvest controls.
-def harvest(high, low):
-    if high == 1 and low == 1:
+def harvest(low, high):
+    if high == ripe and low == ripe:
         print("Harvesting High and Low")
-        Arm.harvest_time([0,0])
+        Arm.harvest_time([ripe,ripe])
         
         #time.sleep(5)
         print("done")
         
-    elif high == 1:
-        print("Harvesting High")
-        Arm.harvest_time([1,0])
+    elif low == ripe:
+        print("Harvesting low")
+        Arm.harvest_time([ripe,unripe])
 
         #time.sleep(5)
         print("done")
          
-    elif low == 1:
-        print("Harvesting Low")
-        Arm.harvest_time([0,1])
+    elif high == ripe:
+        print("Harvesting high")
+        Arm.harvest_time([unripe,ripe])
         
         #time.sleep(5)
         print("done")
@@ -70,17 +74,17 @@ def inside_left():
     return True
 
 def left(steps):
-    Drive.turn(steps, dir = 'l')
+    Drive.Turn(steps, dir = 'l')
     Drive.Stop()
     return True
 
 def right(steps):
-    Drive.turn(steps)
+    Drive.Turn(steps, dir = 'r')
     Drive.Stop()
     return True
 
 def forward(steps):
-    Drive.DriveStraight(steps)
+    Drive.DriveStraight(steps, dir = 'f')
     Drive.Stop()
     return True
     
@@ -107,15 +111,16 @@ while True:             # Keeps it always running
                 break
             if data == b'\n':
                 break
-            time.sleep(0.001)
+            time.sleep(0.01)
         message_str = message.decode('utf-8').strip()   # message_str stays unaltered to reuse in coms back to mom.
         
         # Small delay is to ensure mom has time to listen after sending. However this may be obsolete, I will check tomorrow.
         print("Received message:", message_str, " from mom.")
-        time.sleep(0.2)
+        time.sleep(0.1)
         response = "starting " + message_str
         print(response)
-        mom.write(response.encode())
+        #mom.write(response.encode())
+        time.sleep(0.1)
         
         # Switch table of commands. It's messy but python has no clean switch table thats any better implementation than this.
         # C++ Superior. Once it goes through all of the basic commands it goes to out complicated one for the motors which has
@@ -124,13 +129,13 @@ while True:             # Keeps it always running
         # not a hige concern. Also I will redice the wait timings at a future date to try to speed up operations after they are
         # working.
         if   message_str == "harvest01":		# Harvest Low
-            completed = harvest(0, 1)
+            completed = harvest(ripe, unripe)
         elif message_str == "harvest10":		# Harvest High
-            completed = harvest(1, 0)
+            completed = harvest(unripe, ripe)
         elif message_str == "harvest00":		# Harvest Both High and Low
-            completed = harvest(0, 0)
+            completed = harvest(ripe, ripe)
         elif  message_str == "harvest11":		# Harvest Nothing
-            completed = harvest(1, 1)
+            completed = harvest(unripe,unripe)
             
         # direction commands for the brand new Adjust() function
         elif message_str[:4] == "left":
@@ -139,7 +144,7 @@ while True:             # Keeps it always running
             completed = right(round(float(message_str[5:])))
         elif message_str[:7] == "forward":
             completed = forward(round(float(message_str[7:])))
-        elif message_Str[:4] == "back":
+        elif message_str[:4] == "back":
             completed = back(round(float(message_str[4:])))
             
         elif message_str == "get_to_wall":		# Starts from corner and needs to get within real sense range of the first wall
@@ -166,5 +171,6 @@ while True:             # Keeps it always running
 
     # time.sleep is commented out, it will make print statements glitch but uart
     # will run faster!
-    # time.sleep(0.1)
+    time.sleep(0.01)
     # Reloops looking for a new command.
+
