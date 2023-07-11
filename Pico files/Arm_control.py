@@ -7,7 +7,7 @@ class Armcontrol:
         self.PWM= 65534  #Don't change this number either
         self.speed =.001  #Tuning parameter for motion control
         self.delay =.004   #Tuning parameter for motion control
-        self.delay_harvesting = 2  #delay for harvesting
+        self.delay_harvesting = 2.25  #delay for harvesting
         self.joint1 = PWM(Pin(18)) # Attach PWM object on a GPIO 19
         self.joint2 = PWM(Pin(17))
         self.joint3 = PWM(Pin(16))
@@ -41,8 +41,8 @@ class Armcontrol:
         #bigger is ccw
 
         self.j1_0 = .14
-        self.j1_L = .22
-        self.j1_LH = .23
+        self.j1_L = .20
+        self.j1_LH = .21
         self.j1_I = .18
         self.j1_U = .23
         self.j1_UH = .24
@@ -52,8 +52,8 @@ class Armcontrol:
         #bigger is ccw
 
         self.j2_0 = .226
-        self.j2_L = .165
-        self.j2_LH = .155
+        self.j2_L = .185
+        self.j2_LH = .18
         self.j2_I = .17
         self.j2_U = .11
         self.j2_UH = .1
@@ -66,7 +66,7 @@ class Armcontrol:
 
         self.j3_0 = .128
         self.j3_L = .16
-        self.j3_LH = .16
+        self.j3_LH = .158
         self.j3_I = .16
         self.j3_U = .11
         self.j3_UH = .115
@@ -90,10 +90,10 @@ class Armcontrol:
         picking = 0
         while picking == 0:
             if self.state == 0: # base state
-                if ripe[0] == self.ripe: # if lower is ripe
+                if ripe[0] == 0: # if lower is ripe
                     self.pick_lower_bulb() # pick lower
                     self.state= 1 
-                elif ripe[1] == self.ripe: # else if upper is ripe
+                elif ripe[1] == 0: # else if upper is ripe
                     self.pick_upper_bulb() #pick upper
                     self.state = 3 # go to end state
                 else:
@@ -102,7 +102,7 @@ class Armcontrol:
                     picking = 1 # and end while loop
 
             elif self.state == 1: # at lower
-                if ripe[1] == self.ripe:
+                if ripe[1] == 0:
                     self.intermediate_pose()
                     self.state = 2
                 else:
@@ -111,7 +111,7 @@ class Armcontrol:
                     picking = 1
             
             elif self.state == 2:# at upper
-                if ripe[1] == self.ripe:
+                if ripe[1] == 0:
                     self.pick_upper_bulb()
                     self.state = 3
 
@@ -220,6 +220,15 @@ class Armcontrol:
             
 if __name__ == "__main__":
     arm= Armcontrol()
+    arm.move(arm.j1_L, arm.j2_L, arm.j3_L)
+    utime.sleep(.5)
+    arm.move(arm.j1_LH, arm.j2_LH, arm.j3_LH)
+    arm.motor.value(1)
+    #arm.vacuum.value(1)
+    utime.sleep(arm.delay_harvesting)
+    arm.motor.value(0)
+   # arm.vacuum.value(0)
+    
     
     
         
